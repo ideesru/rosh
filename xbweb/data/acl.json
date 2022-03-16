@@ -1,0 +1,16 @@
+{
+  "users/login"      : "anonimous",
+  "users/logout"     : "all",
+  "users/register"   : "anonimous",
+  "users/remainpass" : "anonimous",
+
+  "users/create"   : "admin, moderator",
+  "users/index"    : "all",
+  "users/get"      : "all",
+  "users/edit"     : "admin, moderator",
+  "users/delete"   : "admin, moderator",
+  "users/remove"   : "admin",
+  "users/trash"    : "admin",
+  "users/clean"    : "admin",
+  "users/settings" : "admin"
+}

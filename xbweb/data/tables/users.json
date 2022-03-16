@@ -1,0 +1,121 @@
+{
+  "options" : "fields",
+  "table"   : "users",
+  "fields"  : [
+    {
+      "name" : "id",
+      "class": "/primary"
+    },
+    {
+      "name"       : "login",
+      "data"       : {"length": 32},
+      "flags"      : ["required", "unique"],
+      "access"     : {
+        "anonimous" : ["create", "read"],
+        "user"      : "read",
+        "moderator" : "full",
+        "admin"     : "full",
+        "inactive"  : "read",
+        "blocked"   : "read",
+        "deleted"   : "read"
+      }
+    },
+    {
+      "name"       : "email",
+      "class"      : "/email",
+      "data"       : {"length": 128},
+      "flags"      : ["required", "unique"],
+      "access"     : {
+        "anonimous" : ["create", "read"],
+        "user"      : "read",
+        "moderator" : "full",
+        "admin"     : "full",
+        "inactive"  : "read",
+        "blocked"   : "read",
+        "deleted"   : "read"
+      }
+    },
+    {
+      "name"       : "phone",
+      "class"      : "/phone",
+      "flags"      : ["required", "unique"],
+      "access"     : {
+        "anonimous" : ["create", "read"],
+        "user"      : "read",
+        "moderator" : "full",
+        "admin"     : "full",
+        "inactive"  : "read",
+        "blocked"   : "read",
+        "deleted"   : "read"
+      }
+    },
+    {
+      "class"      : "/password",
+      "flags"      : ["required"],
+      "access"     : {
+        "anonimous" : "create",
+        "user"      : "update",
+        "moderator" : ["create", "update"],
+        "admin"     : ["create", "update"],
+        "inactive"  : "read",
+        "blocked"   : "read",
+        "deleted"   : "read"
+      }
+    },
+    {
+      "class"      : "/key",
+      "access"     : {
+        "anonimous" : ["create", "read"],
+        "user"      : "read",
+        "moderator" : ["create", "read"],
+        "admin"     : ["create", "read"],
+        "inactive"  : "read",
+        "blocked"   : "read",
+        "deleted"   : "read"
+      },
+      "attributes" : "system"
+    },
+    {
+      "name"       : "created",
+      "class"      : "/datetime",
+      "access"     : {
+        "anonimous" : "read",
+        "user"      : "read",
+        "moderator" : ["create", "read"],
+        "admin"     : ["create", "read"],
+        "inactive"  : "read",
+        "blocked"   : "read",
+        "deleted"   : "read"
+      },
+      "default"    : true,
+      "attributes" : "system"
+    },
+    {
+      "name"       : "activated",
+      "class"      : "/datetime",
+      "access"     : "read",
+      "attributes" : "system, isnull"
+    },
+    {
+      "name"       : "deleted",
+      "class"      : "/datetime",
+      "access"     : {
+        "anonimous" : "read",
+        "user"      : "read",
+        "moderator" : ["create", "read"],
+        "admin"     : ["create", "read"],
+        "inactive"  : "read",
+        "blocked"   : "read",
+        "deleted"   : "read"
+      },
+      "attributes" : "system, isnull"
+    },
+    {
+      "name"       : "flags",
+      "class"      : "/flags",
+      "data"       : {"values": ",deleted,manager,admin,root"},
+      "access"     : "read",
+      "flags"      : "system"
+    }
+  ]
+}
