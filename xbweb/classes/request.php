@@ -316,7 +316,8 @@
          * @param string $ctx  Context
          * @return string
          */
-        public static function canonical($url, $ctx = null) {
+        public static function canonical($url = null, $ctx = null) {
+            if ($url === null) $url = $_SERVER['REQUEST_URI'];
             $U = 'http' . (self::isHTTPS() ? 's' : '') . '://';
             return $U . self::domain() . self::URL($url, $ctx);
         }

@@ -25,12 +25,13 @@
 
         /**
          * Get folder for current context
-         * @param string $folder  Folder name
-         * @param string $module  Module name
+         * @param string $folder Folder name
+         * @param string $module Module name
+         * @param null $ctx
          * @return string
          */
-        public static function path($folder, $module = null) {
-            $ctx = Request::get('context');
+        public static function path($folder, $module = null, $ctx = null) {
+            if ($ctx === null) $ctx = Request::get('context');
             $ret = empty($module) ? \xbweb\Paths\WEBROOT : \xbweb\Paths\MODULES.$module.'/';
             return $ret.$ctx.'/'.$folder.'/';
         }
@@ -48,16 +49,35 @@
             $paths   = empty($module) ? array() : array(self::path($folder, $module));
             $paths[] = self::path($folder).(empty($module) ? '' : $module.'/');
             if ($sys) $paths[] = \xbweb\Paths\CORE.'content/'.$folder.'/';
-            if (is_array($file)) {
-                foreach ($paths as $path) foreach ($file as $fn) {
+            if (!is_array($file)) $file = array($file);
+            foreach ($file as $fn) {
+                foreach ($paths as $path) {
                     $list[] = $path.$fn;
                     if (file_exists($path.$fn)) return $path.$fn;
                 }
-            } else {
-                foreach ($paths as $path) {
-                    $list[] = $path.$file;
-                    if (file_exists($path.$file)) return $path.$file;
-                }
+            }
+            return false;
+        }
+
+        /**
+         * Get chunk
+         * @param string $path  Chunk path
+         * @param bool   $sys   Include system path
+         * @param array  $list  File search list
+         * @return mixed
+         */
+        public static function chunk($path, $sys = true, &$list) {
+            $fn = explode(':', $path);
+            $fc = count($fn) > 1 ? array_shift($fn) : Request::get('context');
+            $fn = explode('/', implode('', $fn));
+            $mn = array_shift($fn);
+            $fn = implode('/', $fn);
+            $paths   = empty($mn) ? array() : array(self::path('chunks', $mn, $fc));
+            $paths[] = self::path('chunks', null, $fc).(empty($mn) ? '' : $mn.'/');
+            if ($sys) $paths[] = \xbweb\Paths\CORE.'content/chunks/';
+            foreach ($paths as $p) {
+                $list[] = $p.$fn.'.'.self::EXT_TPL;
+                if (file_exists($p.$fn.'.'.self::EXT_TPL)) return $p.$fn.'.'.self::EXT_TPL;
             }
             return false;
         }

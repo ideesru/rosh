@@ -21,6 +21,34 @@
      * Basic view system class
      */
     class View {
+        protected static $_fn = null;
+
+        /**
+         * Register function
+         * @param string   $name  Function method
+         * @param callable $fn    Function
+         * @return bool
+         */
+        public static function fn_set($name, $fn) {
+            if (self::$_fn === null) self::$_fn = array();
+            if (!is_callable($fn)) return false;
+            self::$_fn[$name] = $fn;
+            return true;
+        }
+
+        /**
+         * Execute function
+         * @return mixed
+         */
+        public static function fn() {
+            $args = func_get_args();
+            if (count($args) < 1) return false;
+            $name = array_shift($args);
+            if (!isset(self::$_fn[$name])) return false;
+            if (!is_callable(self::$_fn[$name])) return false;
+            return call_user_func_array(self::$_fn[$name], $args);
+        }
+
         /**
          * Get template file
          * @param string $path  Request path
@@ -72,10 +100,24 @@
          * @return string
          */
         public static function chunk($path, $data = null, $sys = false) {
-            $nodes  = explode('/', $path);
-            $module = array_shift($nodes);
-            $fn     = Content::file(implode('/', $nodes).'.'.Content::EXT_TPL, 'chunks', $module, $sys, $_fl);
+            $fn  = Content::chunk($path, $sys, $_fl);
             return Content::render($fn, $data, $_fl);
+        }
+
+        /**
+         * Rows
+         * @param array  $rows  Rows
+         * @param string $tpl   Template
+         * @return string
+         */
+        public static function rows($rows, $tpl) {
+            $ret = array();
+            foreach ($rows as $name => $row) {
+                $r = str_replace('[+name+]', $name, $tpl);
+                foreach ($row as $k => $v) $r = str_replace('[+'.$k.'+]', $v, $r);
+                $ret[] = $r;
+            }
+            return implode("\r\n", $ret);
         }
 
         /**

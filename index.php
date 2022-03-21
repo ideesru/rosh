@@ -91,7 +91,6 @@
             echo json_encode($response);
         } else {
             $response['timing'] = Debug::ps();
-            require 'xbweb/classes/view.php';
             echo View::render($response);
         }
     }
