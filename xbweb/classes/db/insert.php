@@ -177,6 +177,6 @@
                 if ($trans) DB::cancelTransaction($tname);
                 throw $e;
             }
-            return array('success' => array_values($IDs), 'errors' => $errors);
+            return array('ids' => array_values($IDs), 'errors' => $errors);
         }
     }

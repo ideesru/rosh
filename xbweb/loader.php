@@ -267,6 +267,7 @@
                     if ($files = scandir($path)) foreach ($files as $i) {
                         if (is_file($path.'/'.$i) || ($i == '.') || ($i == '..')) continue;
                         if (is_array($incl)) if (!in_array($i, $incl)) continue;
+                        if (strpos($i, '.') !== false) continue;
                         $modules[] = $i;
                     }
                 }
@@ -646,6 +647,7 @@
         require 'classes/lib/access.php';
         require 'classes/lib/files.php';
         // Load primary classes
+        require 'classes/basicobject.php';
         require 'classes/config.php';
         require 'classes/events.php';
         require 'classes/pipeline.php';

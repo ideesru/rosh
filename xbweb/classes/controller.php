@@ -25,6 +25,7 @@
 
         protected $_queries = array();
         protected $_model   = null;
+        protected $_allowed = array();
 
         protected function __construct($path, $model = null) {
             parent::__construct($path);
@@ -81,9 +82,11 @@
          * @throws ErrorForbidden
          */
         protected function _a($action) {
+            if (in_array($action, $this->_allowed)) return true;
             $a = $this->_path.'/'.$action;
             if (!ACL::granted($a)) {
-                if (User::checkAuthorized()) throw new ErrorForbidden('You have no rights for this action', $a);
+                if (User::checkAuthorized())
+                    throw new ErrorForbidden('You have no rights for this action', $a);
             }
             return true;
         }
@@ -129,6 +132,24 @@
         }
 
         /**
+         * Return form
+         * @param array $form
+         * @param array $errors
+         * @return array
+         */
+        public static function form($form = null, $errors = null) {
+            $ret = array(
+                'form'   => $form,
+                'status' => 'success'
+            );
+            if (!empty($errors)) {
+                $ret['errors'] = $errors;
+                $ret['status'] = 'error';
+            }
+            return $ret;
+        }
+
+        /**
          * Return "OK" result
          * @param mixed $data  Result data
          * @return array
@@ -137,6 +158,15 @@
             $ret = array('status' => 'success');
             if ($data !== null) $ret['result'] = $data;
             return $ret;
+        }
+
+        public static function message($msg, $url = null) {
+            return array(
+                'status'   => 'redirect',
+                'template' => '/message',
+                'message'  => $msg,
+                'url'      => $url
+            );
         }
 
         /**
@@ -190,7 +220,9 @@
                 $cn  = \xbweb::uses($path, static::NODE_TYPE);
                 $obj = new $cn($path, $model);
             } catch (\Exception $e) {
-                if (empty(self::$_map[$path])) throw new ErrorNotFound('Controller not found', $path);
+                if (empty(self::$_map[$path])) {
+                    throw new ErrorNotFound($e->getMessage(), $path);
+                }
                 try {
                     $cn  = '\\xbweb\\Controllers\\'.ucfirst(self::$_map[$path]['type']);
                     $obj = new $cn($path, self::$_map[$path]['model']);

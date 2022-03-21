@@ -15,6 +15,7 @@
     namespace xbweb\Entities;
 
     use xbweb\lib\Flags as LibFlags;
+    use xbweb\lib\Roles as LibRoles;
 
     use xbweb\Error;
     use xbweb\ErrorDeleted;
@@ -27,7 +28,8 @@
      * Users library
      */
     class Users {
-        const FLAGS = ',moderator,admin,root,deleted';
+        const FLAGS = ',moderator,admin,root,neo';
+        const ROLES = ',moderator,admin,root,neo';
 
         /**
          * Correct users data
@@ -38,10 +40,13 @@
             return array(
                 'id'        => empty($row['id'])        ? 0       : intval($row['id']),
                 'login'     => empty($row['login'])     ? ''      : $row['login'],
+                'email'     => empty($row['email'])     ? ''      : $row['email'],
+                'phone'     => empty($row['phone'])     ? ''      : $row['phone'],
                 'created'   => empty($row['created'])   ? null    : $row['created'],
                 'activated' => empty($row['activated']) ? null    : $row['activated'],
                 'deleted'   => empty($row['deleted'])   ? null    : $row['deleted'],
-                'flags'     => empty($row['flags'])     ? 0       : LibFlags::toArray(static::FLAGS, $row['flags']),
+                'role'      => empty($row['role'])      ? array() : LibRoles::toArray($row['role']),
+                'flags'     => empty($row['flags'])     ? array() : LibFlags::toArray(static::FLAGS, $row['flags']),
                 'blocks'    => empty($row['blocks'])    ? array() : $row['blocks'],
                 'sessions'  => empty($row['sessions'])  ? array() : $row['sessions'],
                 'settings'  => empty($row['settings'])  ? array() : $row['settings'],
@@ -55,15 +60,15 @@
          * @param array $data User data array
          * @return string
          */
-        public static function group($data) {
+        public static function role($data) {
             if (empty($data['id'])) return 'anonimous';
-            $flags = empty($data['flags']) ? 0 : LibFlags::toInt(self::FLAGS, $data['flags']);
-            if (LibFlags::is(self::FLAGS, 'root', $flags))  return 'root';
-            if (static::isDeleted($data))                   return 'deleted';
-            if (!empty($data['blocks']))                    return 'blocked';
-            if (empty($data['activated']))                  return 'inactive';
-            if (LibFlags::is(self::FLAGS, 'admin', $flags)) return 'admin';
-            $R = LibFlags::is(self::FLAGS, 'moderator', $flags) ? 'moderator' : 'user';
+            $flags = empty($data['role']) ? 0 : LibRoles::toInt($data['role']);
+            if (LibRoles::is('root', $flags))  return 'root';
+            if (static::isDeleted($data))      return 'deleted';
+            if (!empty($data['blocks']))       return 'blocked';
+            if (empty($data['activated']))     return 'inactive';
+            if (LibRoles::is('admin', $flags)) return 'admin';
+            $R = LibRoles::is('moderator', $flags) ? 'moderator' : 'user';
             return $R;
         }
 

@@ -3,6 +3,13 @@
 
     use xbweb\Model;
 
+    /**
+     * Class Conditioned
+     * @property-read Where $where
+     * @property-read array $order
+     * @property-read int   $limit
+     * @property-read int   $offset
+     */
     abstract class Conditioned extends Query {
         protected $_where  = null;
         protected $_order  = array();

@@ -7,6 +7,7 @@
 
     use xbweb\DB\Table  as QueryTable;
     use xbweb\DB\Select as QuerySelect;
+    use xbweb\DB\Where  as Where;
 
     class Table extends Model {
         /**
@@ -38,8 +39,13 @@
          */
         public function get($name = '', $acl = true) {
             /** @var QuerySelect $query */
-            $query  = new QuerySelect($this);
-            $query  = PipeLine::invoke($this->pipeName('select'), $query, $name);
+            $query = new QuerySelect($this);
+            $query = PipeLine::invoke($this->pipeName('select'), $query, $name);
+            $old   = $query->where;
+            $op    = ($name == 'trash') ? 'not null' : 'null';
+            $where = Where::create($this)->condition('deleted', null, $op);
+            if ($old instanceof Where) $where->condition($old);
+            $query->where($where);
             $result = array();
             if ($rows = $query->execute()) {
                 while ($row = $rows->row()) {
@@ -60,7 +66,10 @@
         public function add($row) {
             $query = new DB\Insert($this);
             $query->row($row);
-            if ($result = $query->execute()) return $result;
+            if ($result = $query->execute()) {
+                if (empty($result['ids'])) return false;
+                return array_shift($result['ids']);
+            }
             return false;
         }
 
@@ -71,7 +80,7 @@
          * @throws \xbweb\NodeError
          * @throws \xbweb\DBError
          */
-        public function edit($row, $id) {
+        public function save($row, $id) {
             $query = new DB\Update($this);
             $query->row($row, $id);
             if ($result = $query->execute()) return $result->success;

@@ -311,6 +311,26 @@
         }
 
         /**
+         * Canonical URL
+         * @param string $url  URL
+         * @param string $ctx  Context
+         * @return string
+         */
+        public static function canonical($url, $ctx = null) {
+            $U = 'http' . (self::isHTTPS() ? 's' : '') . '://';
+            return $U . self::domain() . self::URL($url, $ctx);
+        }
+
+        /**
+         * Mailbox
+         * @param string $name  Mailbox
+         * @return string
+         */
+        public static function mailbox($name) {
+            return $name.'@'.self::domain(true);
+        }
+
+        /**
          * Fetch files from request
          * @param string $name      Field name
          * @param bool   $multiple  Get multiple files

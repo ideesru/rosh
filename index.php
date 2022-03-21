@@ -31,11 +31,12 @@
         /** Loading CONFIG if installed */
         if (INSTALLED) require Paths\WEBROOT . 'config.php';
 
+        /** Loading second libraries */
+        require Paths\LIB . 'roles.php';
+        require Paths\LIB . 'content.php';
+
         /** Loading entities libraries */
         require Paths\CLASSES . 'entities/users.php';
-
-        /** Loading content liraries */
-        require Paths\LIB . 'content.php';
 
         /** Loading primary entities */
         require Paths\CLASSES . 'session.php';
@@ -54,7 +55,7 @@
     namespace xbweb {
         /** Execute action */
         try {
-            CMF::init();
+            CMF::get();
             $response = CMF::execute();
             $response['error_page'] = false;
             if (empty($response['status']))   $response['status']   = 'success';

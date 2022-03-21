@@ -42,7 +42,8 @@
             $group = lib\Access::GN_ANONIMOUS;
             if ($user === null) try {
                 $user = User::current();
-                $group = $user->group;
+                $group = $user->role;
+                if ($group === 'root') return true;
             } catch (\Exception $e) {
                 if ($drop) throw $e;
             }

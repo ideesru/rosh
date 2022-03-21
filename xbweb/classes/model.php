@@ -13,6 +13,9 @@
      */
 
     namespace xbweb;
+
+    use xbweb\lib\Flags as LibFlags;
+
     use xbweb\DB\Table;
 
     /**
@@ -20,13 +23,16 @@
      * @property-read array  $fields   Model fields
      * @property-read string $table    Main table
      * @property-read mixed  $primary  Primary key
+     * @property-read array  $options  Model options
      */
     abstract class Model extends Node {
         const NODE_TYPE = 'Model';
+        const OPTIONS   = 'deleted410,norows204';
 
         protected $_fields  = array();
         protected $_table   = null;
         protected $_primary = null;
+        protected $_options = array();
 
         /**
          * Constructor
@@ -39,7 +45,8 @@
             parent::__construct($path);
             if (!is_array($data))      throw new NodeError('Model data incorrect', $path);
             if (empty($data['table'])) throw new NodeError('No table specified', $path);
-            $this->_table = $data['table'];
+            $this->_table   = $data['table'];
+            $this->_options = empty($data['options']) ? array() : LibFlags::toArray(static::OPTIONS, $data['options']);
             $rows = empty($data['fields']) ? false : $data['fields'];
             if (empty($rows)) throw new NodeError('There are no valid fields', $path);
             foreach ($rows as $fid => $field) {
@@ -132,7 +139,7 @@
          */
         public function allowed($field, $operation) {
             if (empty($this->_fields[$field])) throw new NodeError('No field ', $field);
-            $ug = User::current()->group;
+            $ug = User::current()->role;
             if (in_array('system', $this->_fields[$field]['attributes']) && ($operation != 'read')) return false;
             if ($ug == 'root') return true;
             return lib\Access::CRUSGranted($ug, $operation, $this->_fields[$field]['access']);
@@ -140,12 +147,14 @@
 
         /**
          * @param string $operation
-         * @param array $errors
+         * @param null $action
+         * @param bool $forlist
          * @return array
          * @throws Error
          * @throws NodeError
          */
-        public function request($operation, &$errors = array()) {
+        public function request($operation, $action = null, $forlist = false) {
+            if ($action === null) $action = $operation;
             $errors = array();
             $fields = array();
             foreach ($this->_fields as $key => $field) {
@@ -158,6 +167,27 @@
                 } else {
                     $errors[$key] = $error;
                 }
+            }
+            $ret = PipeLine::invoke($this->pipeName('request'), array(
+                'request' => $fields,
+                'errors'  => $errors
+            ), $operation, $action);
+            return $forlist ? array_values($ret) : $ret;
+        }
+
+        /**
+         * @param $operation
+         * @param null $row
+         * @return array
+         * @throws Error
+         * @throws NodeError
+         */
+        public function form($operation, $row = null) {
+            $fields = array();
+            foreach ($this->_fields as $key => $field) {
+                if (!$this->allowed($key, $operation)) continue;
+                $field['value'] = isset($row[$key]) ? $row[$key] : null;
+                $fields[$key]   = $field;
             }
             return $fields;
         }
@@ -186,7 +216,7 @@
         abstract public function getOne($id, $acl = true);
         abstract public function get($name = '', $acl = true);
         abstract public function add($row);
-        abstract public function edit($row, $id);
+        abstract public function save($row, $id);
 
         /**
          * Creates instance of Model by path or data

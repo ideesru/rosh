@@ -26,7 +26,7 @@
          * @param mixed  $def   Default value
          * @return mixed
          */
-        public static function get($name, $def = null) {
+        public static function get($name = null, $def = null) {
             $name = trim($name, '/');
             if (empty($name)) return self::$_registry;
             $k = explode('/', $name);
@@ -50,11 +50,15 @@
 
         /**
          * Set configuration value
-         * @param string $name   Path
-         * @param mixed  $value  Value
+         * @param mixed $name   Path
+         * @param mixed $value  Value
          * @return mixed
          */
-        public static function set($name, $value) {
+        public static function set($name, $value = null) {
+            if (is_array($name)) {
+                self::$_registry = $name;
+                return self::$_registry;
+            }
             $name = trim($name, '/');
             if (empty($name)) {
                 self::$_registry = $value;

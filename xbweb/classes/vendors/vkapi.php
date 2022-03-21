@@ -3,7 +3,16 @@
 
     class VKAPI {
         const HOST    = 'https://api.vk.com/method/';
-        const VERSION = '5.81';
+        const VERSION = '5.131';
+
+        const LANG_RU = 0;
+        const LANG_UK = 1;
+        const LANG_BE = 2;
+        const LANG_EN = 3;
+        const LANG_ES = 4;
+        const LANG_FI = 5;
+        const LANG_DE = 6;
+        const LANG_IT = 7;
 
         protected $_token = false;
         protected $_error = false;
@@ -16,7 +25,7 @@
             $this->_error  = false;
             $data['v']            = self::VERSION;
             $data['access_token'] = $this->_token;
-            $data['lang']         = 0;
+            if (!isset($data['lang'])) $data['lang'] = 'ru';
             $query = http_build_query($data);
             if (!empty($query)) $url.= '?'.$query;
             $curl = curl_init();
@@ -57,5 +66,18 @@
                 foreach ($resp['response']['items'] as $item) $ret[intval($item['id'])] = $item;
             ksort($ret);
             return array_values($ret);
+        }
+
+        public static function langs() {
+            return array(
+                static::LANG_RU => 'ru',
+                static::LANG_UK => 'uk',
+                static::LANG_BE => 'be',
+                static::LANG_EN => 'en',
+                static::LANG_ES => 'es',
+                static::LANG_FI => 'fi',
+                static::LANG_DE => 'de',
+                static::LANG_IT => 'it',
+            );
         }
     }

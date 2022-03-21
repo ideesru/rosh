@@ -1,5 +1,5 @@
 {
-  "options" : "fields",
+  "options" : "fields,deleted410,norows204",
   "table"   : "users",
   "fields"  : [
     {
@@ -38,7 +38,7 @@
     {
       "name"       : "phone",
       "class"      : "/phone",
-      "flags"      : ["required", "unique"],
+      "flags"      : ["unique"],
       "access"     : {
         "anonimous" : ["create", "read"],
         "user"      : "read",
@@ -111,9 +111,13 @@
       "attributes" : "system, isnull"
     },
     {
-      "name"       : "flags",
+      "class"      : "/role",
+      "access"     : "read",
+      "flags"      : "system"
+    },
+    {
       "class"      : "/flags",
-      "data"       : {"values": ",deleted,manager,admin,root"},
+      "data"       : {"values": ""},
       "access"     : "read",
       "flags"      : "system"
     }

@@ -22,7 +22,7 @@
      * @property      array  $data
      * @property      int    $id
      * @property-read bool   $authorized
-     * @property-read string $group
+     * @property-read string $role
      */
     class User {
         /** @var User */
@@ -62,7 +62,7 @@
         public function __get($name) {
             switch ($name) {
                 case 'authorized': return !empty($this->_data['id']);
-                case 'group'     : return Users::group($this->_data);
+                case 'role'      : return Users::role($this->_data);
                 case 'id'        : return intval($this->_data['id']);
             }
             if (property_exists($this, "_{$name}")) return $this->{"_{$name}"};
@@ -148,7 +148,7 @@
          */
         public static function checkAdminAllowed() {
             if (static::checkAuthorized()) {
-                $g = static::current()->group;
+                $g = static::current()->role;
                 if (in_array($g, array(
                     lib\Access::GN_SYSTEM, lib\Access::GN_ROOT,
                     lib\Access::GN_ADMIN , lib\Access::GN_MODERATOR,
@@ -166,7 +166,7 @@
          */
         public static function CRUSGranted($r, $f) {
             static $ug = null;
-            if ($ug === null) $ug = static::current()->group;
+            if ($ug === null) $ug = static::current()->role;
             return Access::CRUSGranted($ug, $r, $f);
         }
     }

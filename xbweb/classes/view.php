@@ -30,9 +30,16 @@
          */
         public static function template($path = null, $data = null, $sys = false) {
             $req = ($path === null) ? Request::get() : Request::route($path);
-            $fn  = empty($req['template']) ? 'index' : $req['template'];
-            $fn  = Content::file($fn.'.'.Content::EXT_TPL, 'templates', $req['module'], $sys, $_fl);
-            return self::_render($fn, $data, $_fl);
+            if (empty($data['template'])) {
+                $fn  = empty($req['template']) ? 'index' : $req['template'];
+                $mod = $req['module'];
+            } else {
+                $fn  = explode('/', $data['template']);
+                $mod = array_shift($fn);
+                $fn  = implode('/', $fn);
+            }
+            $fn  = Content::file($fn.'.'.Content::EXT_TPL, 'templates', $mod, $sys, $_fl);
+            return Content::render($fn, $data, $_fl);
         }
 
         /**
@@ -54,7 +61,7 @@
                 $dlg[] = $tpl.'.'.Content::EXT_PAGE;
             }
             $fn  = Content::file($dlg, 'pages', $req['module'], $sys, $_fl);
-            return self::_render($fn, $data, $_fl);
+            return Content::render($fn, $data, $_fl);
         }
 
         /**
@@ -68,7 +75,7 @@
             $nodes  = explode('/', $path);
             $module = array_shift($nodes);
             $fn     = Content::file(implode('/', $nodes).'.'.Content::EXT_TPL, 'chunks', $module, $sys, $_fl);
-            return self::_render($fn, $data, $_fl);
+            return Content::render($fn, $data, $_fl);
         }
 
         /**
@@ -111,7 +118,7 @@
                     return $content;
                 } else {
                     $data['content'] = $content;
-                    return self::_render($tpl, $data, $_fl_tpl);
+                    return Content::render($tpl, $data, $_fl_tpl);
                 }
             } else {
                 $content = self::content($path, $data, true);
@@ -156,25 +163,6 @@
             return strval(round($v, 2));
         }
 
-        /**
-         * Render template part
-         * @param string $__path Path
-         * @param mixed $__data Variables
-         * @param null $__files
-         * @return string
-         */
-        protected static function _render($__path, $__data = null, $__files = null) {
-            if (!empty($__path) && file_exists($__path)) {
-                ob_start();
-                if (is_array($__data)) extract($__data);
-                unset($__data);
-                include $__path;
-                return ob_get_clean();
-            } else {
-                return '<!-- File not found: '.var_export($__files, true).' -->';
-            }
-        }
-
         protected static function _error($data = null) {
             // Current vars
             $fnc = Content::file(array(
@@ -183,6 +171,6 @@
                 'error.'.Content::EXT_PAGE
             ), 'pages', Request::get('module'), true, $_fl_cnt);
             $cnt = ($fnc === false) ? Paths\CORE.'content/pages/error.'.Content::EXT_PAGE : $fnc;
-            return self::_render($cnt, $data, $_fl_cnt);
+            return Content::render($cnt, $data, $_fl_cnt);
         }
     }

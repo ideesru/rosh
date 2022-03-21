@@ -10,7 +10,8 @@
         protected $_row  = null;
 
         public function __construct(Model $model, $name = null) {
-            $this->_opts = array(
+            $this->_fields = array();
+            $this->_opts   = array(
                 'low_priority' => false,
                 'ignore'       => false
             );
@@ -71,7 +72,6 @@
         /**
          * @return mixed|string
          * @throws DBError
-         * @throws \xbweb\NodeError
          */
         public function sql() {
             if (!empty($this->_row)) {
@@ -79,10 +79,11 @@
                 foreach ($this->_row as $field => $value) $S[] = "`{$field}` = {$value}";
                 $S = implode(',', $S);
                 $where = ($this->_where instanceof Where) ? strval($this->_where) : '';
-            } elseif (!empty($this->_rows)) {
+            } else {
                 $ids = array();
                 $S   = array();
                 $pk  = $this->_model->primary;
+                foreach ($this->_fields as $field => $value) $S[] = "`{$field}` = {$value}";
                 foreach ($this->_rows as $field => $items) {
                     $I = array();
                     foreach ($items as $id => $value) {
@@ -92,25 +93,14 @@
                     $I   = implode(' ', $I);
                     $S[] = "`{$field}` = case `{$pk}` {$I} else `{$field}` end";
                 }
-                $S = implode(',', $S);
-                if ($this->_where instanceof Where) {
-                    $where = new Where($this->_model);
-                    $where
-                        ->condition($this->_where)
-                        ->condition($pk, $ids, 'in');
-                    $where = strval($where);
+                if (empty($this->_fields) && empty($this->_where)) {
+                    if (empty($ids)) throw new DBError('No data to update');
+                    $where = " where `{$pk}` in ('".implode("','", $ids)."')";
                 } else {
-                    $where = "{$pk} in ('".implode("','", $ids)."')";
+                    $where = ($this->_where instanceof Where) ? ' where '.strval($this->_where) : '';
                 }
-            } elseif (!empty($this->_fields)) {
-                $S = array();
-                foreach ($this->_fields as $field => $value) $S[] = "`{$field}` = {$value}";
                 $S = implode(',', $S);
-                $where = ($this->_where instanceof Where) ? strval($this->_where) : '';
-            } else {
-                throw new DBError('No data to update');
             }
-            if (!empty($where)) $where = " where {$where}";
             $opts  = $this->_opts();
             $order = $this->_order();
             $limit = empty($this->_limit) ? '' : ' limit '.$this->_limit;
@@ -122,7 +112,6 @@ sql;
         /**
          * @return bool|mixed|Result
          * @throws DBError
-         * @throws \xbweb\NodeError
          */
         public function execute() {
             return DB::query($this->sql());

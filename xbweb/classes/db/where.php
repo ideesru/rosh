@@ -1,21 +1,41 @@
 <?php
+    /**
+     * Xander Bass Website Content Management Framework (XBWeb CMF)
+     *
+     * @author       Xander Bass
+     * @copyright    Xander Bass
+     * @license      https://opensource.org/licenses/mit-license.php MIT License
+     * @link         https://xbweb.org
+     *
+     * @description  Conditions container
+     * @category     Database components
+     * @link         https://xbweb.org/doc/dist/classes/db/where
+     */
+
     namespace xbweb\DB;
 
     use xbweb\lib\Flags as LibFlags;
 
+    use xbweb\BasicObject;
     use xbweb\DB;
     use xbweb\Model;
 
-    class Where {
+    /**
+     * Class Where
+     * @property-read array  $conditions  Conditions list
+     * @property-read Model  $model       Model
+     * @property-read string $operation   Conjuncting operation
+     */
+    class Where extends BasicObject {
         protected $_conditions = array();
         protected $_model      = null;
         protected $_operation  = 'and';
 
         /**
-         * Where constructor.
-         * @param Model $model
-         * @param string $operation
-         * @param array $conditions
+         * Constructor
+         * @param Model  $model       Model
+         * @param string $operation   Operation
+         * @param array  $conditions  Conditions
          * @throws \xbweb\NodeError
          */
         public function __construct(Model $model, $operation = 'and', $conditions = array()) {
@@ -32,9 +52,10 @@
         }
 
         /**
-         * @param string $field
-         * @param mixed  $value
-         * @param string $operation
+         * Set condition
+         * @param string $field      Field name
+         * @param mixed  $value      Value
+         * @param string $operation  Operation
          * @return $this
          * @throws \xbweb\NodeError
          */
@@ -52,7 +73,7 @@
                     return $this->_bit($field, $value, '=', true);
                 case 'oneof':
                 case 'one_of':
-                    return $this->_bit($field, $value, '<>', true);
+                    return $this->_bit($field, $value, '>', true);
             }
             $operation = DB::operation($operation, '=');
             if (is_array($value)) {
@@ -86,6 +107,32 @@
             return $this;
         }
 
+        /**
+         * Set condition by POST field
+         * @param string $name       Field name
+         * @param array  $values     Allowed values
+         * @param string $operation  Operation
+         * @return $this
+         * @throws \xbweb\NodeError
+         */
+        public function field($name, $values = null, $operation = '=') {
+            if (!$this->_model->hasField($name) || !isset($_POST[$name])) return $this;
+            $value = $_POST[$name];
+            if ($values !== null) {
+                $values = \xbweb::arg($values);
+                if (!in_array($value, $values)) return $this;
+            }
+            return $this->condition($name, $value, $operation);
+        }
+
+        /**
+         * Bit condition
+         * @param string $f  Field name
+         * @param mixed  $v  Value
+         * @param string $o  Operation
+         * @param bool   $n  Operate with zero
+         * @return $this
+         */
         protected function _bit($f, $v, $o, $n = false) {
             $fd = $this->_model->fields[$f];
             $fk = empty($fd['data']['values']) ? array() : $fd['data']['values'];
@@ -98,6 +145,10 @@
             return $this;
         }
 
+        /**
+         * String value
+         * @return string
+         */
         public function __toString() {
             $ret = array();
             foreach ($this->_conditions as $cond) {
@@ -112,13 +163,14 @@
         }
 
         /**
-         * @param Model $model
-         * @param string $operation
-         * @param array $conditions
+         * Static create
+         * @param Model  $model       Model
+         * @param string $operation   Operation
+         * @param array  $conditions  Conditions
          * @return Where
          * @throws \xbweb\NodeError
          */
-        public function create(Model $model, $operation = 'and', $conditions = array()) {
+        public static function create(Model $model, $operation = 'and', $conditions = array()) {
             return new self($model, $operation, $conditions);
         }
     }
