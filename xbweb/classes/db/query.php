@@ -100,4 +100,15 @@
          * @return mixed
          */
         abstract public function sql();
+
+        /**
+         * Get limit from request
+         * @param int $limit  Default limit
+         * @return string
+         */
+        public static function getLimitFromRequest($limit = 30) {
+            $page  = empty($_REQUEST['page'])  ? 1      : intval($_REQUEST['page']);
+            $limit = empty($_REQUEST['limit']) ? $limit : intval($_REQUEST['limit']);
+            return ($page * $limit).','.$limit;
+        }
     }

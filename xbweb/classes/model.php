@@ -22,15 +22,22 @@
      * Model prototype class
      * @property-read array  $fields   Model fields
      * @property-read string $table    Main table
+     * @property-read string $alias    Main table alias
+     * @property-read int    $limit    Limit per page
      * @property-read mixed  $primary  Primary key
      * @property-read array  $options  Model options
      */
     abstract class Model extends Node {
         const NODE_TYPE = 'Model';
         const OPTIONS   = 'deleted410,norows204';
+        const LIMIT     = 20;
+
+        protected static $_models = array();
 
         protected $_fields  = array();
         protected $_table   = null;
+        protected $_alias   = null;
+        protected $_limit   = self::LIMIT;
         protected $_primary = null;
         protected $_options = array();
 
@@ -47,14 +54,19 @@
             if (empty($data['table'])) throw new NodeError('No table specified', $path);
             $this->_table   = $data['table'];
             $this->_options = empty($data['options']) ? array() : LibFlags::toArray(static::OPTIONS, $data['options']);
+            $this->_limit   = empty($data['limit']) ? static::LIMIT : intval($data['limit']);
             $rows = empty($data['fields']) ? false : $data['fields'];
+            $rows = PipeLine::invoke($this->pipeName('fields'), $rows);
             if (empty($rows)) throw new NodeError('There are no valid fields', $path);
             foreach ($rows as $fid => $field) {
+                if (!empty($field['std'])) $field = Field::std($field['std']);
                 $field = Field::correct($field);
+                $field['model'] = $this;
                 if (empty($field['name'])) throw new FieldError('Empty field name', $fid);
                 $this->_fields[$field['name']] = $field;
                 if (in_array('primary', $field['attributes'])) $this->_primary = $field['name'];
             }
+            $this->_alias = 't_'.ucwords($this->_table, '_');
         }
 
         /**
@@ -85,15 +97,16 @@
             if (empty($this->_fields[$field])) throw new NodeError('No field ', $field);
             $value = Field::value($this->_fields[$field], $value);
             if (empty($value)) {
-                if (in_array('required', $this->_fields[$field]['flags'])) {
-                    $error = 'empty';
-                    return false;
-                }
-                return true;
+                if (!in_array('required', $this->_fields[$field]['flags'])) return true;
+                $error = 'empty';
             } else {
-                $error = false;
-                return Field::valid($this->_fields[$field], $value, $error);
+                $error = Field::valid($this->_fields[$field], $value);
+                if ($error === true) {
+                    $error = false;
+                    return true;
+                }
             }
+            return false;
         }
 
         /**
@@ -168,11 +181,19 @@
                     $errors[$key] = $error;
                 }
             }
+            if ($operation == 'update') {
+                if (empty($fields[$this->_primary])) $fields[$this->_primary] = $this->getID();
+            }
             $ret = PipeLine::invoke($this->pipeName('request'), array(
                 'request' => $fields,
                 'errors'  => $errors
             ), $operation, $action);
             return $forlist ? array_values($ret) : $ret;
+        }
+
+        public function getID() {
+            if (empty($_POST[$this->_primary])) return Request::get('id');
+            return $_POST[$this->_primary];
         }
 
         /**
@@ -213,10 +234,42 @@
             return $data;
         }
 
+        /**
+         * Check if value exists
+         * @param $field
+         * @param $value
+         * @return bool
+         * @throws NodeError
+         */
+        public function exists($field, $value) {
+            $value = $this->value($field, $value);
+            $table = DB::table($this->_table);
+            $sql   = "select * from `{$table}` where `{$field}` = '{$value}'";
+            if ($rows = DB::query($sql)) if ($row = $rows->row()) return true;
+            return false;
+        }
+
+        /**
+         * Get full field
+         * @param $field
+         * @return string
+         * @throws NodeError
+         */
+        public function field($field) {
+            if (empty($this->_fields[$field])) throw new NodeError('No field ', $field);
+            return $this->_alias.".`{$field}`";
+        }
+
         abstract public function getOne($id, $acl = true);
         abstract public function get($name = '', $acl = true);
         abstract public function add($row);
-        abstract public function save($row, $id);
+        abstract public function update($row, $id);
+
+        public function save($row, $n = null) {
+            $id = empty($row[$this->_primary]) ? null : $row[$this->_primary];
+            if (empty($id) || $n) return $this->add($row);
+            return $this->update($row, $id) ? $id : false;
+        }
 
         /**
          * Creates instance of Model by path or data
@@ -242,7 +295,8 @@
                     $data = json_decode(file_get_contents($fn), true);
                 }
             }
-            return new $cn($path, $data);
+            if (empty(self::$_models[$path])) self::$_models[$path] = new $cn($path, $data);
+            return self::$_models[$path];
         }
 
         /**

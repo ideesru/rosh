@@ -35,10 +35,13 @@
          */
         public static function handler($service, $name, $func, $status = true) {
             if (empty($service) || empty($name) || !is_callable($func)) return false;
-            $name = lcfirst($name);
-            self::$handlers[static::KEY][$name][$service] = $func;
-            if (isset(self::$map[static::KEY][$name][$service])) return true;
-            self::$map[static::KEY][$name][$service] = filter_var($status, FILTER_VALIDATE_BOOLEAN);
+            $name = explode(',', $name);
+            foreach ($name as $name_i) {
+                $name_i = lcfirst(trim($name_i));
+                self::$handlers[static::KEY][$name_i][$service] = $func;
+                if (isset(self::$map[static::KEY][$name_i][$service])) continue;
+                self::$map[static::KEY][$name_i][$service] = filter_var($status, FILTER_VALIDATE_BOOLEAN);
+            }
             return true;
         }
 

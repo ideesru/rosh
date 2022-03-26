@@ -78,7 +78,7 @@
                 $S = array();
                 foreach ($this->_row as $field => $value) $S[] = "`{$field}` = {$value}";
                 $S = implode(',', $S);
-                $where = ($this->_where instanceof Where) ? strval($this->_where) : '';
+                $where = $this->_where();
             } else {
                 $ids = array();
                 $S   = array();
@@ -97,15 +97,16 @@
                     if (empty($ids)) throw new DBError('No data to update');
                     $where = " where `{$pk}` in ('".implode("','", $ids)."')";
                 } else {
-                    $where = ($this->_where instanceof Where) ? ' where '.strval($this->_where) : '';
+                    $where = $this->_where();
                 }
                 $S = implode(',', $S);
             }
+            $A     = $this->_model->alias;
             $opts  = $this->_opts();
             $order = $this->_order();
             $limit = empty($this->_limit) ? '' : ' limit '.$this->_limit;
             return <<<sql
-update {$opts} `{$this->_table}` set {$S} {$where}{$order}{$limit}
+update {$opts} `{$this->_table}` as {$A} set {$S} {$where}{$order}{$limit}
 sql;
         }
 

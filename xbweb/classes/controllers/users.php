@@ -73,7 +73,7 @@
          * @throws \xbweb\NodeError
          */
         protected function onConstruct() {
-            $model = Model::create($this->_model);
+            $model = Model::create($this->_modelPath);
             $this->_fuse = Where::create($model);
             switch (User::current()->role) {
                 case 'user'     : $this->_fuse->condition($model->primary, User::current()->id); break;
@@ -134,29 +134,19 @@
          */
         public function do_register() {
             if (User::current()->authorized) static::redirectBack();
-            $model = Model::create($this->_model);
-            $errors = null;
+            $errors  = null;
+            $request = null;
             if (Request::isPost()) {
-                list($request, $errors) = $model->request('create', 'register', true);
-                $request['key'] = true;
-                if (!Config::get('users/activation', false)) $request['activated'] = true;
-                if (empty($errors)) {
-                    if ($result = $model->add($request)) {
-                        $user = LibUsers::getByID($result);
-                        if (Config::get('users/activation', false)) {
-                            $key = $this->_gkey($user, 'activation');
-                            $url = Request::canonical('/activation?user=' . $user['id'] . '&key=' . $key);
-                            if (!$this->_mail($user, array('url' => $url))) return self::error('Cannot sent registration mail');
-                            return self::message('Registration successfull! Check your email for activation');
-                        } else {
-                            if (!$this->_mail($user)) return self::error('Cannot sent registration mail');
-                            $this->_logged($user);
-                        }
+                if ($user = LibUsers::register($request, $errors)) {
+                    if (Config::get('users/activation', false)) {
+                        return self::message('Registration successfull! Check your email for activation');
+                    } else {
+                        $this->_logged($user);
                     }
-                    $errors = 'Unable to register user';
                 }
             }
-            return self::form($model->form('create'), $errors);
+            $model = Model::create($this->_modelPath);
+            return self::form($model->form('create', $request), $request, $errors);
         }
 
         /**
@@ -171,10 +161,10 @@
             if (empty($_GET['user']) || empty($_GET['key'])) throw new ErrorForbidden('No key or user for activation');
             $user = LibUsers::getByID(intval($_GET['user']));
             if (empty($user)) throw new ErrorNotFound('User not found');
-            $key = $this->_gkey($user, 'activation');
+            $key = LibUsers::gkey($user, 'activation');
             if ($key != $_GET['key']) throw new ErrorForbidden('Invalid activation key');
-            $sql = 'update `[+prefix+]users` set `activated` = now() where `id` = '.$user['id'];
-            if ($result = DB::query($sql)) if ($result->success) $this->_logged($user, 'User activated successfully');
+            if ($this->_ukey("`activated` = now()", $user['id']))
+                return $this->_logged($user, 'User activated successfully');
             return self::error('Error user activation');
         }
 
@@ -189,7 +179,7 @@
                 if (empty($_POST['email'])) return self::error('Email not sent');
                 $user = LibUsers::getByLogin($_POST['email']);
                 if (empty($user)) throw new ErrorNotFound('User not found');
-                $key = $this->_gkey($user, 'password');
+                $key = LibUsers::gkey($user, 'password');
                 $url = Request::canonical('/changepass?user=' . $user['id'] . '&key=' . $key);
                 if (!Mailer::create()
                     ->from(Request::mailbox('no-reply'))
@@ -217,23 +207,16 @@
             $user = intval($_REQUEST['user']);
             $user = LibUsers::getByID($user);
             if (empty($user)) throw new ErrorNotFound('User not found');
-            $key = $this->_gkey($user, 'password');
+            $key = LibUsers::gkey($user, 'password');
             if ($key != $_REQUEST['key']) throw new ErrorForbidden('Invalid key');
             if (Request::isPost()) {
                 if (empty($_REQUEST['password'])) return self::error('Password not set');
-                $k = \xbweb::key();
                 $p = \xbweb\password($_REQUEST['password']);
-                $q = <<<sql
-update `[+prefix+]users` set `key` = '{$k}', `password` = '{$p}' where `id` = '{$user['id']}'
-sql;
-                if ($result = DB::query($q, true)) {
-                    if ($result->success) {
-                        return $this->_logged($user, 'Password changed successfully');
-                    }
-                }
+                if ($this->_ukey("`password` = '{$p}'", $user['id']))
+                    return $this->_logged($user, 'Password changed successfully');
                 return self::error('Password change error');
             } else {
-                return self::form(array(
+                return self::form(null, array(
                     'user' => intval($_GET['user']),
                     'key'  => $_GET['key'],
                 ));
@@ -241,39 +224,18 @@ sql;
         }
 
         /**
+         * Request with update user key
+         * @param $cq
          * @param $id
          * @return bool
          */
-        protected function _ckey($id) {
+        protected function _ukey($cq, $id) {
             $k = \xbweb::key();
-            $q = "update `[+prefix+]users` set `key` = '{$k}' where `id` = '{$id}'";
+            $q = <<<sql
+update `[+prefix+]users` set `key` = '{$k}', {$cq} where `id` = '{$id}'
+sql;
             if ($result = DB::query($q, true)) return $result->success;
             return false;
-        }
-
-        /**
-         * @param $user
-         * @param $name
-         * @return string
-         */
-        protected function _gkey($user, $name) {
-            return md5($name.': '.$user['id'].'/'.$user['key']);
-        }
-
-        /**
-         * @param $user
-         * @param null $data
-         * @return mixed
-         * @throws \xbweb\Error
-         */
-        protected function _mail($user, $data = null) {
-            $vars = array();
-            if (is_array($data)) foreach ($data as $k => $v) $vars[$k] = $v;
-            $vars['user'] = $user;
-            return Mailer::create()
-                ->from(Request::mailbox('no-reply'))
-                ->to($user['email'])
-                ->send('register', 'Registration', $vars);
         }
 
         /**

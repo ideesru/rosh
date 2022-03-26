@@ -28,9 +28,7 @@
             return LibFlags::toArray($data['data']['values'], $value, in_array('empties', $data['flags']));
         }
 
-        protected static function __valid(array $data, $value, &$error) {
-            return true;
-        }
+        protected static function __valid(array $data, $value) { return true; }
 
         protected static function __value(array $data, $value) {
             if (empty($data['data']['values'])) return 0;

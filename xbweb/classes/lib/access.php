@@ -182,6 +182,12 @@
                 }
             } elseif (array_key_exists($v, self::$_access)) {
                 return self::$_access[$v];
+            } else {
+                $v = self::CRUSValue($v);
+                foreach (self::$_groups as $g) {
+                    foreach (self::$_rights as $r)
+                        if (in_array($r, $v)) $ret |= self::$_map[$g][$r];
+                }
             }
             return $ret;
         }

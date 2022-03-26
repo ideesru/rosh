@@ -23,6 +23,10 @@
 
     use xbweb\DB;
     use xbweb\Config;
+    use xbweb\Model;
+    use xbweb\PipeLine;
+    use xbweb\Request;
+    use xbweb\Mailer;
 
     /**
      * Users library
@@ -150,5 +154,57 @@
             $data['password'] = $P;
             // Return data
             return $data;
+        }
+
+        /**
+         * @param $request
+         * @param mixed $errors
+         * @return mixed
+         * @throws Error
+         * @throws ErrorNotFound
+         * @throws \xbweb\NodeError
+         */
+        public static function register(&$request, &$errors = false) {
+            $model   = Model::create('/users');
+            list($request, $errors) = $model->request('create', 'register', true);
+            $request['key'] = true;
+            if (!Config::get('users/activation', false)) $request['activated'] = true;
+            if (empty($errors)) {
+                if ($result = $model->add($request)) {
+                    $user = PipeLine::invoke('registerUsers', self::getByID($result), $request);
+                    $data = null;
+                    if (Config::get('users/activation', false)) {
+                        $key  = self::gkey($user, 'activation');
+                        $url  = Request::canonical('/activation?user=' . $user['id'] . '&key=' . $key);
+                        $data = array('url' => $url);
+                    }
+                    if (self::mail($user, $data)) return $user;
+                    $errors = 'Cannot sent registration mail';
+                } else {
+                    $errors = 'Unable to register user';
+                }
+            }
+            return false;
+        }
+
+        public static function gkey($user, $name) {
+            return md5($name.': '.$user['id'].'/'.$user['key']);
+        }
+
+        /**
+         * @param $user
+         * @param null $data
+         * @return mixed
+         * @throws \xbweb\Error
+         */
+        public static function mail($user, $data = null) {
+            return true;
+            $vars = array();
+            if (is_array($data)) foreach ($data as $k => $v) $vars[$k] = $v;
+            $vars['user'] = $user;
+            return Mailer::create()
+                ->from(Request::mailbox('no-reply'))
+                ->to($user['email'])
+                ->send('register', 'Registration', $vars);
         }
     }

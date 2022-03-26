@@ -27,10 +27,13 @@
          * @return mixed
          */
         public static function invoke() {
+            static $c = 0;
             $M = static::getMap();
             $a = func_get_args();
             if (empty($a[0])) throw new \BadMethodCallException('Empty pipe name');
             $n = lcfirst(array_shift($a));
+            Debug::set('pipe_'.$c, $n);
+            $c++;
             if (count($a) == 0) array_unshift($a, false);
             if (empty(self::$handlers[static::KEY][$n]) || empty($M[$n])) return $a[0];
             if (!is_array($M[$n])) return $a[0];

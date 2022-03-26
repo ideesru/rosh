@@ -9,7 +9,7 @@
      * @method static correct(array $data) array
      * @method static pack(array $data, $value) mixed
      * @method static unpack(array $data, $value) mixed
-     * @method static valid(array $data, $value, &$error) bool
+     * @method static valid(array $data, $value) bool
      * @method static value(array $data, $value) mixed
      */
     abstract class Field {
@@ -117,5 +117,34 @@
                 }
             }
             return call_user_func_array(array($args[0]['classname'], '__'.$name), $args);
+        }
+
+        /**
+         * @param $std
+         * @return array|bool
+         */
+        public static function std($std) {
+            switch ($std) {
+                case 'created': return array(
+                    'name'       => 'created',
+                    'class'      => '/datetime',
+                    'access'     => 'create,read',
+                    'default'    => true,
+                    'attributes' => 'system'
+                );
+                case 'updated': return array(
+                    'name'       => 'deleted',
+                    'class'      => '/datetime',
+                    'access'     => 'read,update',
+                    'attributes' => 'system,isnull'
+                );
+                case 'deleted': return array(
+                    'name'       => 'deleted',
+                    'class'      => '/datetime',
+                    'access'     => 'read',
+                    'attributes' => 'system,isnull'
+                );
+            }
+            return false;
         }
     }

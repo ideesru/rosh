@@ -97,7 +97,7 @@
                 include $__path;
                 return ob_get_clean();
             } else {
-                return '<!-- File not found: '.var_export($__files, true).' -->'.'<!-- '.var_export($__data, true).' -->';
+                return '<!-- File not found: '.var_export($__files, true).' -->';
             }
         }
     }

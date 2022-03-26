@@ -25,7 +25,7 @@
             return LibRoles::toArray($value);
         }
 
-        protected static function __valid(array $data, $value, &$error) {
+        protected static function __valid(array $data, $value) {
             return true;
         }
 

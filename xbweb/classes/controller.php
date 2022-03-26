@@ -16,6 +16,7 @@
 
     /**
      * Controller prototype class
+     * @property-read string $modelPath
      */
     abstract class Controller extends Node {
         const NODE_TYPE      = 'Controller';
@@ -23,13 +24,13 @@
 
         protected static $_map = array();
 
-        protected $_queries = array();
-        protected $_model   = null;
-        protected $_allowed = array();
+        protected $_queries   = array();
+        protected $_modelPath = null;
+        protected $_allowed   = array();
 
         protected function __construct($path, $model = null) {
             parent::__construct($path);
-            $this->_model = empty($model) ? $this->_path : $model;
+            $this->_modelPath = empty($model) ? $this->_path : $model;
         }
 
         /**
@@ -99,7 +100,7 @@
          * @throws \xbweb\Error
          */
         protected function _q($sql) {
-            $model = Model::create($this->_model);
+            $model = Model::create($this->_modelPath);
             $ids   = empty($_POST['id']) ? Request::get('id') : $_POST['id'];
             $ret   = array();
             if (is_array($ids)) {
@@ -134,12 +135,14 @@
         /**
          * Return form
          * @param array $form
+         * @param null $values
          * @param array $errors
          * @return array
          */
-        public static function form($form = null, $errors = null) {
+        public static function form($form = null, $values =  null, $errors = null) {
             $ret = array(
                 'form'   => $form,
+                'values' => $values,
                 'status' => 'success'
             );
             if (!empty($errors)) {
@@ -248,5 +251,9 @@
                 'model' => empty($model) ? $path : $model
             );
             return true;
+        }
+
+        public static function map() {
+            return self::$_map;
         }
     }

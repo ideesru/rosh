@@ -176,7 +176,7 @@
                 $route['file'] = empty($path) ? null : implode('/', $path);
             } else {
                 $route['module'] = self::read($path, \xbweb::modules(true));
-                $controllers = \xbweb::controllers($route['module']);
+                $controllers = PipeLine::invoke('controllers', \xbweb::controllers($route['module']), $route['module']);
                 $route['controller'] = self::readNodes($path, $controllers);
                 if (empty($route['controller']) && !empty($route['module'])) {
                     if ($controllers['controller'] === true) $route['controller'] = true;

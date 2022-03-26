@@ -1,10 +1,13 @@
-<?php /** @noinspection PhpUnusedParameterInspection */
+<?php /** @noinspection PhpUnhandledExceptionInspection */
+
+    /** @noinspection PhpUnusedParameterInspection */
 
     namespace xbweb\Fields;
 
     use xbweb\DB;
     use xbweb\Field;
     use xbweb\FieldError;
+    use xbweb\Model;
 
     class Str extends Field {
         const ATTRIBUTES  = 'primary, isnull, binary, index, node, fixed';
@@ -31,18 +34,15 @@
             return $value;
         }
 
-        protected static function __valid(array $data, $value, &$error = false) {
-            if (!empty($data['data']['length'])) if (strlen($value) > $data['data']['length']) {
-                $error = 'long';
-                return false;
-            }
-            if (strlen($value) < $data['data']['min']) {
-                $error = 'short';
-                return false;
-            }
+        protected static function __valid(array $data, $value) {
+            if (in_array('unique', $data['flags']))
+                if ($data['model'] instanceof Model)
+                    if ($data['model']->exists($data['name'], $value)) return 'exists';
+            if (!empty($data['data']['length'])) if (strlen($value) > $data['data']['length']) return 'long';
+            if (strlen($value) < $data['data']['min']) return 'short';
             if (empty($data['data']['regexp'])) return true;
             if (preg_match($data['data']['regexp'], $value)) return true;
-            return false;
+            return 'invalid';
         }
 
         protected static function __value(array $data, $value) {

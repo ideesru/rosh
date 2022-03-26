@@ -5,8 +5,10 @@
     use xbweb\DB;
     use xbweb\Model;
 
-    use xbweb\DB\Table  as QueryTable;
     use xbweb\DB\Select as QuerySelect;
+    use xbweb\DB\Insert as QueryInsert;
+    use xbweb\DB\Update as QueryUpdate;
+    use xbweb\DB\Table  as QueryTable;
     use xbweb\DB\Where  as Where;
 
     class Table extends Model {
@@ -24,7 +26,7 @@
             if ($rows = DB::query($sql, true)) {
                 if ($row = $rows->row()) {
                     $result = $acl ? $this->row($row) : $row;
-                    return PipeLine::invoke($this->pipeName('row'), $result);
+                    return PipeLine::invoke($this->pipeName('row'), $result, 'one');
                 }
             }
             return false;
@@ -49,11 +51,11 @@
             $result = array();
             if ($rows = $query->execute()) {
                 while ($row = $rows->row()) {
-                    $id = $row[$this->primary];
+                    $id          = $row[$this->primary];
                     $result[$id] = $acl ? $this->row($row) : $row;
-                    $result[$id] = PipeLine::invoke($this->pipeName('row'), $result[$id]);
+                    $result[$id] = PipeLine::invoke($this->pipeName('row'), $result[$id], 'many');
                 }
-                return $result;
+                return PipeLine::invoke($this->pipeName('rows'), $result);
             }
             return false;
         }
@@ -64,7 +66,7 @@
          * @throws \Exception
          */
         public function add($row) {
-            $query = new DB\Insert($this);
+            $query = new QueryInsert($this);
             $query->row($row);
             if ($result = $query->execute()) {
                 if (empty($result['ids'])) return false;
@@ -80,8 +82,8 @@
          * @throws \xbweb\NodeError
          * @throws \xbweb\DBError
          */
-        public function save($row, $id) {
-            $query = new DB\Update($this);
+        public function update($row, $id) {
+            $query = new QueryUpdate($this);
             $query->row($row, $id);
             if ($result = $query->execute()) return $result->success;
             return false;

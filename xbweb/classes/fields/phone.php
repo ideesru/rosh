@@ -12,10 +12,9 @@
             return parent::__correct($data);
         }
 
-        protected static function __valid($data, $value, &$error) {
+        protected static function __valid($data, $value) {
             if (preg_match(\xbweb::REX_PHONE, $value)) return true;
-            $error = 'incorrect';
-            return false;
+            return 'invalid';
         }
 
         protected static function __value($data, $value) {

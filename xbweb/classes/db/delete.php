@@ -23,12 +23,13 @@
         }
 
         public function sql() {
+            $A     = $this->_model->alias;
             $opts  = $this->_opts('low_priority', 'quick');
             $where = $this->_where();
             $order = $this->_order();
             $limit = empty($this->_limit) ? '' : " limit {$this->_limit}";
             return <<<sql
-delete {$opts} from `{$this->_table}`{$where}{$order}{$limit}
+delete {$opts} from `{$this->_table}` as {$A} {$where}{$order}{$limit}
 sql;
         }
 

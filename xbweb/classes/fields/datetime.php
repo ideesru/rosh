@@ -26,13 +26,12 @@
             return "'{$value}'";
         }
 
-        protected static function __valid(array $data, $value, &$error) {
+        protected static function __valid(array $data, $value) {
             try {
                 new \DateTime($value);
                 return true;
             } catch (\Exception $e) {
-                $error = 'incorrect';
-                return false;
+                return 'invalid';
             }
         }
 

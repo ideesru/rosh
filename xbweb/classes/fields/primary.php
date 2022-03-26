@@ -34,11 +34,10 @@
             return $value;
         }
 
-        protected static function __valid(array $data, $value, &$error = false) {
+        protected static function __valid(array $data, $value) {
             if (empty($data['data']['regexp'])) return true;
             if (preg_match($data['data']['regexp'], $value)) return true;
-            $error = 'incorrect';
-            return false;
+            return 'invalid';
         }
 
         protected static function __value(array $data, $value) {

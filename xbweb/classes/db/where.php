@@ -60,6 +60,7 @@
          * @throws \xbweb\NodeError
          */
         public function condition($field, $value = null, $operation = '=') {
+            $A = $this->_model->alias;
             if ($field instanceof Where) {
                 $this->_conditions[] = $field;
                 return $this;
@@ -100,8 +101,26 @@
                     $value = $this->_model->pack($field, $value);
             }
             $this->_conditions[] = array(
-                'field'     => "`{$field}`",
+                'field'     => "{$A}.`{$field}`",
                 'value'     => $value,
+                'operation' => $operation
+            );
+            return $this;
+        }
+
+        /**
+         * @param $field1
+         * @param $field2
+         * @param string $operation
+         * @return $this
+         */
+        public function compare($field1, $field2, $operation = '=') {
+            $A = $this->_model->alias;
+            if (!$this->_model->hasField($field1)) return $this;
+            $operation = DB::operation($operation, '=');
+            $this->_conditions[] = array(
+                'field'     => "{$A}.`{$field1}`",
+                'value'     => $field2,
                 'operation' => $operation
             );
             return $this;
@@ -134,11 +153,12 @@
          * @return $this
          */
         protected function _bit($f, $v, $o, $n = false) {
+            $A  = $this->_model->alias;
             $fd = $this->_model->fields[$f];
             $fk = empty($fd['data']['values']) ? array() : $fd['data']['values'];
             $fv = LibFlags::keyValue($fk, $v);
             $this->_conditions[] = array(
-                'field'     => "(`{$f}` & {$fv})",
+                'field'     => "({$A}.`{$f}` & {$fv})",
                 'value'     => $n ? 0 : $fv,
                 'operation' => $o
             );
