@@ -1,5 +1,7 @@
 <?php
     namespace xbweb;
+
+    use xbweb\modules\Rosh\HTML;
 ?>
 <div class="mainfilter" id="mainfilter">
     <div class="mainfilter__close --closefilter">
@@ -22,7 +24,7 @@
                                 <div class="accardeon__name --yellow">Лицо</div>
                             </div>
                             <div class="accardeon__list">
-                                <?=View::fn('checkboxes', array(
+                                <?=HTML::checkboxes(array(
                                     'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                     'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                     'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -43,7 +45,7 @@
                                 <div class="accardeon__name --green">Тело</div>
                             </div>
                             <div class="accardeon__list">
-                                <?=View::fn('checkboxes', array(
+                                <?=HTML::checkboxes(array(
                                     'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                     'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                     'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -64,7 +66,7 @@
                                 <div class="accardeon__name --red">Волосы</div>
                             </div>
                             <div class="accardeon__list">
-                                <?=View::fn('checkboxes', array(
+                                <?=HTML::checkboxes(array(
                                     'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                     'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                     'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -85,7 +87,7 @@
                                 <div class="accardeon__name --blue">Гинекология</div>
                             </div>
                             <div class="accardeon__list">
-                                <?=View::fn('checkboxes', array(
+                                <?=HTML::checkboxes(array(
                                     'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                     'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                     'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -106,7 +108,7 @@
                                 <div class="accardeon__name --purple">Лаборатория</div>
                             </div>
                             <div class="accardeon__list">
-                                <?=View::fn('checkboxes', array(
+                                <?=HTML::checkboxes(array(
                                     'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                     'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                     'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -131,7 +133,7 @@
                                     <div class="accardeon__name --yellow">Лицо</div>
                                 </div>
                                 <div class="accardeon__list">
-                                    <?=View::fn('checkboxes', array(
+                                    <?=HTML::checkboxes(array(
                                         'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -152,7 +154,7 @@
                                     <div class="accardeon__name --green">Тело</div>
                                 </div>
                                 <div class="accardeon__list">
-                                    <?=View::fn('checkboxes', array(
+                                    <?=HTML::checkboxes(array(
                                         'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -173,7 +175,7 @@
                                     <div class="accardeon__name --red">Волосы</div>
                                 </div>
                                 <div class="accardeon__list">
-                                    <?=View::fn('checkboxes', array(
+                                    <?=HTML::checkboxes(array(
                                         'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -197,7 +199,7 @@
                                     <div class="accardeon__name --yellow">Лицо</div>
                                 </div>
                                 <div class="accardeon__list">
-                                    <?=View::fn('checkboxes', array(
+                                    <?=HTML::checkboxes(array(
                                         'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -218,7 +220,7 @@
                                     <div class="accardeon__name --green">Тело</div>
                                 </div>
                                 <div class="accardeon__list">
-                                    <?=View::fn('checkboxes', array(
+                                    <?=HTML::checkboxes(array(
                                         'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -239,7 +241,7 @@
                                     <div class="accardeon__name --red">Волосы</div>
                                 </div>
                                 <div class="accardeon__list">
-                                    <?=View::fn('checkboxes', array(
+                                    <?=HTML::checkboxes(array(
                                         'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                         'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -258,7 +260,7 @@
                         </div>
                         <div class="accardeon-group no-border">
                             <div class="accrdeon__title">Гинекология</div>
-                            <?=View::fn('checkboxes', array(
+                            <?=HTML::checkboxes(array(
                                 'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                 'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
                                 'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service-l'),
@@ -276,7 +278,7 @@
                     </div>
                     <div class="mainfilter__tab data-tab-item" data-tab="sympthoms">
                         <div class="accrdeon__title">Симптомы</div>
-                        <?=View::fn('checkboxes', array(
+                        <?=HTML::checkboxes(array(
                             'gyne[1]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service'),
                             'gyne[2]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service'),
                             'gyne[3]'  => array('title' => 'Консультация врача', 'url' => '/landing', 'popup' => '--service'),

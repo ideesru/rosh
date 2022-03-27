@@ -8,13 +8,13 @@
     <?=View::chunk('/head')?>
 </head><body class="body">
 <div class="scroll-container" data-scroll-container>
+    <?=View::chunk('/header')?>
+    <?=View::chunk('/menu')?>
     <main class="page">
-        <?=View::chunk('/header')?>
-        <?=View::chunk('/menu')?>
         <?=$content?>
-        <?=View::chunk('/footer')?>
-        <?=View::chunk('/content/mainfilter')?>
     </main>
+    <?=View::chunk('/footer')?>
+    <?=View::chunk('/content/mainfilter')?>
 </div>
 <?=View::chunk('/popup')?>
 <?=View::chunk('/content/sliders/main')?>

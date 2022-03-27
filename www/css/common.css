@@ -1,5 +1,7 @@
 @import "all.css";
 
+main.page { padding-top: 0; }
+
 div.popup.--service div.text { margin: 0; }
 
 div.ddl + div.ddm { display: none; padding-left: 1.5em; }
