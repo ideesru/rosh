@@ -133,10 +133,101 @@
                 case 'userprofile':
                     $fn = Paths\CORE.'data/menu/'.$place.'.json';
                     if (file_exists($fn)) $data = json_decode(file_get_contents($fn), true);
+                    $mods = \xbweb::modules();
+                    foreach ($mods as $m) {
+                        $fn = Paths\MODULES.$m.'/data/menu/'.$place.'.json';
+                        if (!file_exists($fn)) continue;
+                        $menu = json_decode(file_get_contents($fn), true);
+                        if (empty($menu)) continue;
+                        $data = array_merge_recursive($data, $menu);
+                    }
                     break;
             }
             if (empty($data)) return '';
+            $data = PipeLine::invoke('menu', $data, $place);
             return Template::menu($data, $tpls, $place);
+        }
+
+        public static function form($action, $form, $values = null, $errors = null) {
+            $caption = Language::action($action);
+            $url     = Request::URL($action);
+            $action  = explode('/', $action);
+            $module  = array_shift($action);
+            $cats    = array();
+            $tabs    = array();
+            $f       = true;
+            foreach ($form as $cat => $fields) {
+                if (empty($fields)) continue;
+                $a   = $f ? 'active' : '';
+                $f   = false;
+                $tab = array();
+                $c   = count($form) > 1 ? 'tab '.$a : 'single-tab';
+                foreach ($fields as $fid => $field) {
+                    $fc    = explode('/', $field['class']);
+                    $mn    = array_shift($fc);
+                    $fp    = $mn.'/fields/'.implode('/', $fc);
+                    $key   = 'field-'.(empty($module) ? '' : $module.'-').$fid;
+                    $field = Language::field($key, $field);
+                    $field['value'] = isset($values[$fid]) ? $values[$fid] : null;
+                    $tab[] = self::chunk($fp, $field, true);
+                }
+                $tab    = implode("\r\n", $tab);
+                $cats[] = '<a href="#form-category-'.$cat.'" class="'.$a.'">'.Language::translate('category-'.$cat).'</a>';
+                $tabs[] = <<<html
+<section id="form-category-{$cat}" class="{$c}">
+    {$tab}
+</section>
+html;
+            }
+            if (count($cats) > 1) {
+                $cats = implode("\r\n", $cats);
+                $cats = <<<html
+<nav class="tabs">
+    {$cats}
+</nav>
+html;
+            } else {
+                $cats = '';
+            }
+            $tabs = implode("\r\n", $tabs);
+            $buttons = array(
+                'edit'  => Language::translate('edit'),
+                'save'  => Language::translate('save'),
+                'reset' => Language::translate('reset'),
+            );
+            $errs = array();
+            if (!empty($errors)) foreach ($errors as $k => $v) {
+                if (is_int($k)) {
+                    $errs[] = '<li class="error">'.$v.'</li>';
+                } else {
+                    $f = Language::translate('field-'.(empty($module) ? '' : $module.'-').$k);
+                    $e = Language::translate('error-'.$v);
+                    $errs[] = '<li class="error">'.$f.': '.$e.'</li>';
+                }
+            }
+            if (!empty($errs)) {
+                $errs = implode("\r\n", $errs);
+                $errs = <<<html
+<ul class="messages">
+{$errs}
+</ul> 
+html;
+            } else {
+                $errs = '';
+            }
+            return <<<html
+<form action="{$url}" method="post" enctype="multipart/form-data">
+    <h2>{$caption}</h2>
+    {$errs}
+    {$cats}
+    {$tabs}
+    <div class="buttons">
+        <button type="submit" name="action" value="edit" class="ok">{$buttons['edit']}</button>
+        <button type="submit" name="action" value="save" class="ok">{$buttons['save']}</button>
+        <button type="reset">{$buttons['reset']}</button>
+    </div>
+</form> 
+html;
         }
 
         /**

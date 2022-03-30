@@ -1,0 +1,22 @@
+leads | Заявки
+
+leads-index  | Заявки
+leads-create | Новая заявка
+
+leads-statuses | Статусы заявок
+leads-payments | Статусы платежей
+leads-services | Услуги
+
+leads-statuses-index | Статусы заявок
+leads-payments-index | Статусы платежей
+leads-services-index | Услуги
+
+leads-statuses-create | Новый статус
+leads-payments-create | Новый статус
+leads-services-create | Новая услуга
+
+field-name     | Название
+field-rank     | Порядок
+field-category | Категория
+field-branch   | Специализация
+field-type     | Тип

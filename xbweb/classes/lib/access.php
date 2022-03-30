@@ -174,11 +174,21 @@
             if (is_int($v)) return ($v & static::FACL_ALL);
             $ret = 0;
             if (is_array($v)) {
+                $go = empty($v['others']) ? array() : self::CRUSValue($v['others']);
                 foreach (self::$_groups as $gi => $g) {
-                    if (empty($v[$g])) continue;
-                    $gv = self::CRUSValue($v[$g]);
-                    foreach (self::$_rights as $ri => $r)
-                        if (in_array($r, $gv)) $ret |= self::$_map[$g][$r];
+                    $ge = true;
+                    if (!empty($v[$g])) {
+                        $gv = self::CRUSValue($v[$g]);
+                        foreach (self::$_rights as $ri => $r) {
+                            if (in_array($r, $gv)) {
+                                $ge   = false;
+                                $ret |= self::$_map[$g][$r];
+                            }
+                        }
+                    }
+                    if ($ge) foreach (self::$_rights as $ri => $r) {
+                        if (in_array($r, $go)) $ret |= self::$_map[$g][$r];
+                    }
                 }
             } elseif (array_key_exists($v, self::$_access)) {
                 return self::$_access[$v];
@@ -201,10 +211,13 @@
             if (is_numeric($v)) $v = intval($v);
             $ret = array();
             if (is_array($v)) {
+                $go = empty($v['others']) ? array() : self::CRUSValue($v['others']);
                 foreach (self::$_groups as $gi => $g) {
-                    if (empty($v[$g])) continue;
-                    $gv = self::CRUSValue($v[$g]);
-                    $ret[$g] = array_intersect(self::$_rights, $gv);
+                    if (!empty($v[$g])) {
+                        $gv = self::CRUSValue($v[$g]);
+                        $ret[$g] = array_intersect(self::$_rights, $gv);
+                    }
+                    if (empty($ret[$g])) $ret[$g] = $go;
                 }
             } else {
                 if (!is_int($v)) $v = self::CRUSToInt($v);

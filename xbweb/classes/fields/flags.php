@@ -10,7 +10,7 @@
         const BASE_TYPE = self::T_INT;
 
         const FLAGS       = 'required, empties';
-        const ATTRIBUTES  = 'isnull, unsigned';
+        const ATTRIBUTES  = 'isnull, unsigned, system';
 
         protected static function __correct($data) {
             if (empty($data['name'])) $data['name'] = 'flags';

@@ -1,0 +1,23 @@
+@import "scrollBar.css";
+@import "grid.css";
+@import "/xbweb/css/ui.css";
+
+aside .sb-scrollbar       { background-color: rgba(255, 255, 255, .3); }
+aside .sb-scrollbar:hover { background-color: rgba(255, 255, 255, .5); }
+aside .sb-content         { overflow-x: hidden; }
+
+aside li > a[href*="/index"]:before             { content: '\f124'; }
+aside li > a[href*="/create"]:before            { content: '\f0c6'; }
+aside li > a[href*="/trash"]:before             { content: '\f0ff'; }
+aside li > a[href*="/fields/index"]:before      { content: '\f117'; }
+aside li > a[href*="/settings"]:before          { content: '\f0eb'; }
+
+aside li.menu-category.key-users > span:before  { content: '\f160'; }
+aside li.menu-category.key-groups > span:before { content: '\f161'; }
+aside li.menu-item.key-dashboard > a:before     { content: '\f133'; }
+aside li.menu-item.key-site > a:before          { content: '\f162'; }
+
+aside li.menu-category.key-leads          > span:before { content: '\f161'; }
+aside li.menu-category.key-leads-payments > span:before { content: '\f149'; }
+aside li.menu-category.key-leads-services > span:before { content: '\f14e'; }
+aside li.menu-category.key-leads-statuses > span:before { content: '\f09a'; }

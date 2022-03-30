@@ -1,10 +1,9 @@
 {
-  "top" : {
+  "project" : {
     "type"  : "block",
-    "title" : "Project",
     "items" : {
       "site"      : {"newtab" : true, "url" : "/"},
-      "dashboard" : {"newtab" : true}
+      "dashboard" : {"action" : "/"}
     }
   },
   "users" : {
@@ -12,14 +11,11 @@
     "items" : {
       "users" : {
         "type"  : "category",
-        "title" : "Users",
         "items" : {
           "users-index"  : {
-            "title"  : "All users",
             "action" : "/users/index"
           },
           "users-create" : {
-            "title"  : "Create user",
             "action" : "/users/create"
           }
         }

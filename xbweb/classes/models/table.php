@@ -44,7 +44,7 @@
             $query = new QuerySelect($this);
             $query = PipeLine::invoke($this->pipeName('select'), $query, $name);
             $old   = $query->where;
-            $op    = ($name == 'trash') ? 'not null' : 'null';
+            $op    = ($name == 'trash') ? 'not null' : '=';
             $where = Where::create($this)->condition('deleted', null, $op);
             if ($old instanceof Where) $where->condition($old);
             $query->where($where);

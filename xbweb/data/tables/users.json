@@ -113,13 +113,13 @@
     {
       "class"      : "/role",
       "access"     : "read",
-      "flags"      : "system"
+      "attributes" : "system"
     },
     {
       "class"      : "/flags",
       "data"       : {"values": ""},
       "access"     : "read",
-      "flags"      : "system"
+      "attributes" : "system"
     }
   ]
 }

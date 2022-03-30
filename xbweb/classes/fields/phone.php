@@ -21,4 +21,12 @@
             $value = preg_replace('~([^\-\+\d]+)~si', '', $value);
             return intval($value);
         }
+
+        protected static function __pack($data, $value) {
+            return self::__value($data, $value);
+        }
+
+        protected static function __unpack($data, $value) {
+            return $value;
+        }
     }

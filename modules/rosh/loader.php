@@ -6,7 +6,7 @@
 
     define(__NAMESPACE__.'\\MODULE_NAME', 'Rosh');
 
-    PipeLine::handler(MODULE_NAME, 'getContexts', function(){
+    PipeLine::handler(MODULE_NAME, 'contexts', function(){
         return array(Request::CTX_WWW, Request::CTX_ADMIN, 'administrator', 'expert');
     });
 

@@ -7,7 +7,7 @@
 </div>
 <?php if (!empty($trace)): ?>
     <div class="block add" id="trace">
-        <pre><?=var_export($trace, true)?></pre>
+        <pre><?php var_dump($trace)?></pre>
     </div>
 <?php endif; ?>
 <?php if (!empty($timing)): ?>
@@ -16,7 +16,7 @@
     </div>
 <?php endif; ?>
 <div class="block add" id="vars">
-    <pre><?=var_export(get_defined_vars(), true)?></pre>
+    <pre><?php var_dump(get_defined_vars())?></pre>
 </div>
 <div class="block add" id="debug">
     <pre><?=var_export(\xbweb\Debug::get(), true)?></pre>

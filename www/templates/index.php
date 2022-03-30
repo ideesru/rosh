@@ -14,8 +14,8 @@
         <?=$content?>
     </main>
     <?=View::chunk('/footer')?>
-    <?=View::chunk('/content/mainfilter')?>
 </div>
+<?=View::chunk('/content/mainfilter')?>
 <?=View::chunk('/popup')?>
 <?=View::chunk('/content/sliders/main')?>
 </body></html>

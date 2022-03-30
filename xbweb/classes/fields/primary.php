@@ -8,6 +8,7 @@
         const ATTRIBUTES  = 'primary, auto_increment, binary, unsigned';
 
         protected static function __correct($data) {
+            if (empty($data['name'])) $data['name'] = 'id';
             $data = parent::__correct($data);
             if (!in_array('primary', $data['attributes'])) $data['attributes'][] = 'primary';
             if (empty($data['data']['type'])) $data['data']['type'] = 'serial';

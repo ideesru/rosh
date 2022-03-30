@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
     namespace xbweb;
 
     use xbweb\modules\Rosh\HTML;
@@ -14,7 +14,13 @@
         </div>
         <div class="header__right --flex --aicn">
             <button class="btn btn-link --openpopup --mobile-fade" data-popup="--fast">Записаться на прием</button>
-            <button class="btn btn-link enter --openpopup --mobile-fade" data-popup="--enter-number">Войти</button>
+            <?php
+                if (User::current()->authorized) {
+                    echo View::chunk('www:/menu/profile');
+                } else {
+                    echo '<button class="btn btn-link enter --openpopup --mobile-fade" data-popup="--enter-number">Войти</button>';
+                }
+            ?>
             <button class="burger"></button>
         </div>
     </div>

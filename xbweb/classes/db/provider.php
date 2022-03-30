@@ -191,6 +191,7 @@
                         $this->log_result(false, $qkey);
                         return false;
                     }
+                    if (empty($install)) throw $e;
                     $tkey = self::log($install, $point);
                     $R    = $this->do_query($install);
                     $this->log_result($R->success, $tkey);

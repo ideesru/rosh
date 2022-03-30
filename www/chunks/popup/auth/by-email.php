@@ -1,6 +1,6 @@
 <div class="popup --email-enter">
     <div class="popup__overlay"></div>
-    <div class="popup__panel">
+    <form class="popup__panel" action="/login">
         <button class="popup__close">
             <svg class="svgsprite _close">
                 <use xlink:href="/www/img/sprites/svgsprites.svg#close"></use>
@@ -22,5 +22,5 @@
                 <button class="btn btn--white form__submit --switchpopup" type="button" data-popup="--reg">Зарегистрироваться</button>
             </div>
         </form>
-    </div>
+    </form>
 </div>

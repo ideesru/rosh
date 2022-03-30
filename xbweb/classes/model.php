@@ -191,9 +191,14 @@
             return $forlist ? array_values($ret) : $ret;
         }
 
+        /**
+         * @return mixed
+         * @throws NodeError
+         */
         public function getID() {
             if (empty($_POST[$this->_primary])) return Request::get('id');
-            return $_POST[$this->_primary];
+            $value = $_POST[$this->_primary];
+            return $this->value($this->_primary, $value);
         }
 
         /**
@@ -204,13 +209,15 @@
          * @throws NodeError
          */
         public function form($operation, $row = null) {
-            $fields = array();
+            $fields = array('main' => array());
             foreach ($this->_fields as $key => $field) {
                 if (!$this->allowed($key, $operation)) continue;
-                $field['value'] = isset($row[$key]) ? $row[$key] : null;
-                $fields[$key]   = $field;
+                $field['value']     = isset($row[$key]) ? $row[$key] : null;
+                $field['operation'] = $operation;
+                unset($field['model']);
+                $fields['main'][$key] = $field;
             }
-            return $fields;
+            return PipeLine::invoke($this->pipeName('form'), $fields, $operation);
         }
 
         /**
@@ -224,7 +231,7 @@
             $data = array();
             foreach ($this->_fields as $key => $field) {
                 if (!$this->allowed($key, 'read')) continue;
-                $value = isset($row[$key]) ? $row[$row] : null;
+                $value = isset($row[$key]) ? $row[$key] : null;
                 if ($unpack) {
                     $data[$key] = Field::unpack($field, $value);
                 } else {
@@ -244,7 +251,9 @@
         public function exists($field, $value) {
             $value = $this->value($field, $value);
             $table = DB::table($this->_table);
-            $sql   = "select * from `{$table}` where `{$field}` = '{$value}'";
+            $curid = $this->getID();
+            $priid = $this->_primary;
+            $sql   = "select * from `{$table}` where (`{$field}` = '{$value}') and ({$priid} <> {$curid})";
             if ($rows = DB::query($sql)) if ($row = $rows->row()) return true;
             return false;
         }

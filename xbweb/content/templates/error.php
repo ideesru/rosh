@@ -13,7 +13,7 @@
     <style type="text/css">
         body {
             margin: 0; padding: 0; font: 16px monospace;
-            background: #9f4f40; color: white;
+            color: #9f4f40;
         }
 
         a { color: #9fcfff; }

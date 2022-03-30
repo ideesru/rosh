@@ -37,7 +37,7 @@
         const T_BLOB_LONG   = 0x37;
 
         const FLAGS       = 'required, unique';
-        const ATTRIBUTES  = 'primary, auto_increment, isnull, binary, unsigned, index, node';
+        const ATTRIBUTES  = 'primary, auto_increment, isnull, binary, unsigned, index, node, system';
 
         const REX_CLASS   = '~^([\w\/]+)$~si';
         const DEF_CLASS   = '/str';
@@ -69,20 +69,13 @@
             );
             $data['link'] = isset($data['link']) ? $data['link'] : null;
             if (is_array($data['link'])) {
-                $data['link'] = array(
-                    'table' => empty($data['link']['table']) ? '' : $data['link']['table'],
-                    'field' => empty($data['link']['field']) ? '' : $data['link']['field'],
-                );
+                if (empty($data['link']['field'])) $data['link']['field'] = 'id';
+                if (empty($data['link']['table'])) throw new DataError('No table for link', $data['name']);
                 foreach (array('update', 'delete') as $k) {
                     $data['link'][$k] = empty($data['link'][$k]) ? 'set null' : (
-                    $data['link'][$k] == in_array($data['link'][$k], array(
-                        'cascade', 'restrict'
-                    )) ? $data['link'][$k] : 'set null'
+                        in_array($data['link'][$k], array('cascade', 'restrict')) ? $data['link'][$k] : 'set null'
                     );
-                    if ($data['link'][$k] == 'set null') {
-                        $data['nullable'] = true;
-                        $data['default']  = null;
-                    }
+                    if ($data['link'][$k] == 'set null') $data['default'] = null;
                 }
             }
             return $data;
@@ -113,9 +106,10 @@
                 if ($c = \xbweb::uses($path, 'field')) {
                     $args[0]['classname'] = $c;
                 } else {
-                    throw new Error('Error loading field class', $path);
+                    throw new DataError('Error loading field class', $path);
                 }
             }
+            if (!method_exists($args[0]['classname'], '__'.$name)) throw new DataError('Method does not realized', $path.':'.$name);
             return call_user_func_array(array($args[0]['classname'], '__'.$name), $args);
         }
 

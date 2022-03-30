@@ -176,6 +176,21 @@
         }
 
         /**
+         * Test create table SQL
+         * @throws ErrorNotFound
+         * @throws \xbweb\Error
+         */
+        public function do_table_test() {
+            $model = Model::create($this->_modelPath);
+            header('Content-type: text/plain; charset=utf-8');
+            die($model->tableSQL());
+        }
+
+        public function do_settings() {
+            return self::success();
+        }
+
+        /**
          * Handle form
          * @param string $op Operation
          * @param null $values
@@ -188,7 +203,7 @@
         protected function _form($op = 'update', &$values = null, &$errors = null) {
             $model = Model::create($this->_modelPath);
             if ($op == 'update') {
-                $row = $model->getOne(Request::get('id'), false);
+                $row = $model->getOne($model->getID(), false);
                 if (empty($row)) $this->_notfound();
             } else {
                 $row = null;
@@ -223,6 +238,7 @@
          */
         protected function _index() {
             $url = '/'.trim($this->_path, '/').'/index';
+            if (Request::isAJAX()) $url.= '?is-ajax=true';
             \xbweb::redirect(Request::URL($url));
         }
 

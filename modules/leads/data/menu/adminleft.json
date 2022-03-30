@@ -1,0 +1,35 @@
+{
+    "leads" : {
+        "type" : "block",
+        "items" : {
+            "leads" : {
+                "type" : "category",
+                "items" : {
+                    "leads-index"  : {"action" : "leads/index"},
+                    "leads-create" : {"action" : "leads/create"}
+                }
+            },
+            "leads-services" : {
+                "type" : "category",
+                "items" : {
+                    "leads-services"        : {"action" : "leads/services/index"},
+                    "leads-services-create" : {"action" : "leads/services/create"}
+                }
+            },
+            "leads-statuses" : {
+                "type" : "category",
+                "items" : {
+                    "leads-statuses"        : {"action" : "leads/statuses/index"},
+                    "leads-statuses-create" : {"action" : "leads/statuses/create"}
+                }
+            },
+            "leads-payments" : {
+                "type" : "category",
+                "items" : {
+                    "leads-payments"        : {"action" : "leads/payments/index"},
+                    "leads-payments-create" : {"action" : "leads/payments/create"}
+                }
+            }
+        }
+    }
+}

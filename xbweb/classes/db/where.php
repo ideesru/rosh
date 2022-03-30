@@ -176,7 +176,14 @@
                     $cond = strval($cond);
                     $ret[] = "({$cond})";
                 } else {
-                    $ret[] = "({$cond['field']} {$cond['operation']} {$cond['value']})";
+                    switch ($cond['operation']) {
+                        case 'is null':
+                        case 'is not null':
+                            $ret[] = "({$cond['field']} {$cond['operation']})";
+                            break;
+                        default:
+                            $ret[] = "({$cond['field']} {$cond['operation']} {$cond['value']})";
+                    }
                 }
             }
             return implode(" {$this->_operation} ", $ret);

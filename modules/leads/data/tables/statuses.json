@@ -1,0 +1,24 @@
+{
+    "table"   : "statuses",
+    "fields" : [
+        {"class": "/primary"},
+        {
+            "name"   : "name",
+            "data"   : {"length" : 50},
+            "access" : {"admin": "full", "others": "read"},
+            "flags"  : "required"
+        },
+        {
+            "name"   : "rank",
+            "class"  : "/integer",
+            "data"   : {"type" : "byte"},
+            "access" : {"admin": "full", "others": "read"}
+        },
+        {
+            "class" : "/flags",
+            "data"   : {"values" : ["lower"]},
+            "access" : {"admin"  : "full", "others": "read"},
+            "attributes" : "system"
+        }
+    ]
+}

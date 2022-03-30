@@ -1,0 +1,37 @@
+{
+  "controller/create"   : "all",
+  "controller/index"    : "all",
+  "controller/get"      : "all",
+  "controller/edit"     : "admin",
+  "controller/delete"   : "admin",
+  "controller/remove"   : "admin",
+  "controller/trash"    : "admin",
+  "controller/clean"    : "admin",
+
+  "payments/create"   : "all",
+  "payments/index"    : "all",
+  "payments/get"      : "all",
+  "payments/edit"     : "admin",
+  "payments/delete"   : "admin",
+  "payments/remove"   : "admin",
+  "payments/trash"    : "admin",
+  "payments/clean"    : "admin",
+
+  "services/create"   : "all",
+  "services/index"    : "all",
+  "services/get"      : "all",
+  "services/edit"     : "admin",
+  "services/delete"   : "admin",
+  "services/remove"   : "admin",
+  "services/trash"    : "admin",
+  "services/clean"    : "admin",
+
+  "statuses/create"   : "all",
+  "statuses/index"    : "all",
+  "statuses/get"      : "all",
+  "statuses/edit"     : "admin",
+  "statuses/delete"   : "admin",
+  "statuses/remove"   : "admin",
+  "statuses/trash"    : "admin",
+  "statuses/clean"    : "admin"
+}

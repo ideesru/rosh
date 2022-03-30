@@ -1,0 +1,77 @@
+{
+  "options" : "fields,deleted410,norows204",
+  "table"   : "leads",
+  "fields"  : [
+    {"class": "/primary"},
+    {
+      "name"       : "type",
+      "class"      : "/integer",
+      "data"       : {"type" : "byte"},
+      "default"    : 0,
+      "access"     : "read",
+      "attributes" : "system"
+    },
+    {
+      "name"       : "patient",
+      "class"      : "/user",
+      "link"       : {"update" : "cascade", "delete" : "cascade"},
+      "access"     : "read",
+      "attributes" : "system"
+    },
+    {
+      "name"       : "expert",
+      "class"      : "/user",
+      "access"     : {"admin" : "create,read,update", "others" : "read"},
+      "attributes" : "isnull"
+    },
+    {
+      "name"       : "status",
+      "class"      : "/link",
+      "attributes" : "isnull",
+      "link"       : {"table" : "statuses"}
+    },
+    {
+      "name"       : "payment",
+      "class"      : "/link",
+      "attributes" : "isnull",
+      "link"       : {"table" : "payments"}
+    },
+    {
+      "name"       : "text",
+      "class"      : "/text",
+      "attributes" : "isnull"
+    },
+    {
+      "name"       : "created",
+      "class"      : "/datetime",
+      "access"     : "create, read",
+      "default"    : true,
+      "attributes" : "system"
+    },
+    {
+      "name"       : "served",
+      "class"      : "/datetime",
+      "access"     : "read",
+      "attributes" : "system, isnull"
+    },
+    {
+      "name"       : "update",
+      "class"      : "/datetime",
+      "access"     : "read, update",
+      "default"    : true,
+      "attributes" : "system, isnull"
+    },
+    {
+      "name"       : "deleted",
+      "class"      : "/datetime",
+      "access"     : "read",
+      "attributes" : "system, isnull"
+    },
+    {
+      "class"      : "/flags",
+      "data"       : {"values": ""},
+      "access"     : "read",
+      "flags"      : "system"
+    }
+  ]
+}

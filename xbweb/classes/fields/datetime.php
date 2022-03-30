@@ -26,6 +26,10 @@
             return "'{$value}'";
         }
 
+        protected static function __unpack(array $data, $value) {
+            return $value;
+        }
+
         protected static function __valid(array $data, $value) {
             try {
                 new \DateTime($value);

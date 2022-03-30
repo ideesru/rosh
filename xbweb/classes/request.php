@@ -167,9 +167,9 @@
             }
             $route['path'] = implode('/', $path);
             // Context
-            $contexts = PipeLine::invoke('getContexts', array(static::CTX_ADMIN, static::CTX_API, static::CTX_WWW));
+            $contexts = PipeLine::invoke('contexts', array(static::CTX_ADMIN, static::CTX_API, static::CTX_WWW));
             $route['context'] = self::read($path, $contexts, static::CTX_WWW);
-            $route['context'] = PipeLine::invoke('getContext', $route['context']);
+            $route['context'] = PipeLine::invoke('context', $route['context']);
             // File or action
             if (!empty($path) && ($path[0] == 'xbweb')) {
                 array_shift($path);
@@ -177,6 +177,7 @@
             } else {
                 $route['module'] = self::read($path, \xbweb::modules(true));
                 $controllers = PipeLine::invoke('controllers', \xbweb::controllers($route['module']), $route['module']);
+                Debug::set('controllers', $controllers);
                 $route['controller'] = self::readNodes($path, $controllers);
                 if (empty($route['controller']) && !empty($route['module'])) {
                     if ($controllers['controller'] === true) $route['controller'] = true;
@@ -196,6 +197,9 @@
                     if (!empty($_POST['action'])) {
                         $route['action'] = $_POST['action'];
                         $route['post_action'] = $_POST['action'];
+                    }
+                    if (!empty($_POST['id'])) {
+                        $route['id'] = intval($_POST['id']);
                     }
                     $route['alias']    = empty($path) ? null : implode('/', $path);
                     $ctrl = $route['controller'] === true ? '' : $route['controller'].'/';

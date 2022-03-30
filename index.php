@@ -49,6 +49,7 @@
         /** Loading CMF */
         require Paths\CLASSES . 'cmf.php';
         Debug::p('Core loaded');
+        require Paths\CORE . 'service.php';
     }
 
     /** PROCESS ACTION **/

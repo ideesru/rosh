@@ -5,6 +5,8 @@
     use xbweb\DB;
 
     class Password extends Str {
+        const FLAGS = 'required';
+
         protected static function __correct($data) {
             if (empty($data['name'])) $data['name'] = 'password';
             $data = parent::__correct($data);

@@ -10,7 +10,7 @@
     use xbweb\Model;
 
     class Str extends Field {
-        const ATTRIBUTES  = 'primary, isnull, binary, index, node, fixed';
+        const ATTRIBUTES  = 'primary, isnull, binary, index, node, fixed, system';
 
         protected static function __correct($data) {
             $data = parent::__correct($data);

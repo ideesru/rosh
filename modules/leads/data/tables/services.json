@@ -1,0 +1,56 @@
+{
+    "table"   : "services",
+    "fields" : [
+        {"class": "/primary"},
+        {
+            "name"   : "name",
+            "data"   : {"length" : 200},
+            "access" : {"admin": "full", "others": "read"},
+            "flags"  : "required"
+        },
+        {
+            "name"   : "description",
+            "class"  : "/text",
+            "access" : {"admin": "full", "others": "read"},
+            "attributes" : "isnull"
+        },
+        {
+            "name"   : "branch",
+            "class"  : "/integer",
+            "data"   : {"type" : "byte"},
+            "access" : {"admin": "full", "others": "read"}
+        },
+        {
+            "name"   : "category",
+            "data"   : {"length" : 200},
+            "access" : {"admin": "full", "others": "read"},
+            "flags"  : "required"
+        },
+        {
+            "name"    : "type",
+            "class"   : "/integer",
+            "data"    : {"type" : "byte"},
+            "default" : 0,
+            "access"  : {"admin": "full", "others": "read"}
+        },
+        {
+            "name"    : "price",
+            "class"   : "/decimal",
+            "default" : 0,
+            "access"  : {"admin": "full", "others": "read"}
+        },
+        {
+            "name"    : "rank",
+            "class"   : "/integer",
+            "data"    : {"type" : "byte"},
+            "default" : 0,
+            "access"  : {"admin": "full", "others": "read"}
+        },
+        {
+            "class" : "/flags",
+            "data"   : {"values" : ["lower"]},
+            "access" : {"admin"  : "full", "others": "read"},
+            "attributes" : "system"
+        }
+    ]
+}

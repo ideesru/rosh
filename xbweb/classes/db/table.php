@@ -81,37 +81,43 @@
             $un = array();
             $ix = array();
             $ll = array();
+            $ml = 0;
             foreach ($this->_model->fields as $fn => $fd) {
                 $field = $this->_field($fd);
                 if (empty($field)) continue;
-                $fl[] = "`{$fn}` ".$field;
+                $fl[$fn] = $field;
+                if (strlen($fn) > $ml) $ml = strlen($fn);
                 if (in_array('primary', $fd['attributes'])) {
                     $pk[] = "`{$fn}`";
                 } elseif (in_array('node', $fd['attributes'])) {
                     $un[] = "`{$fn}`";
                 } elseif (in_array('index', $fd['attributes'])) {
-                    $ix[] = ",\r\nindex (`{$fn}`)";
+                    $ix[] = ",\r\n  index (`{$fn}`)";
                 } elseif (in_array('unique', $fd['flags'])) {
-                    $ix[] = ",\r\nunique index (`{$fn}`)";
+                    $ix[] = ",\r\n  unique index (`{$fn}`)";
                 }
                 if (!empty($fd['link'])) {
                     $t = DB::table($fd['link']['table']);
                     $f = $fd['link']['field'];
                     $u = $fd['link']['update'];
                     $d = $fd['link']['delete'];
-                    $ll[] = ",\r\nforeign key (`{$fn}`) references `{$t}`(`{$f}`) on update {$u} on delete {$d}";
+                    $ll[] = ",\r\n  foreign key (`{$fn}`) references `{$t}`(`{$f}`) on update {$u} on delete {$d}";
                 }
             }
 
             $ne = empty($this->_opts['if_not_exists']) ? '' : 'if not exists';
-            $fl = implode(",\r\n", $fl);
-            $pk = empty($pk) ? '' : ",\r\n".'primary key ('.implode(',', $pk).')';
-            $un = empty($un) ? '' : ",\r\n".'unique index `node`('.implode(',', $un).')';
+            $fr = array();
+            foreach ($fl as $fn => $field) {
+                $fr[] = '  '.str_pad("`{$fn}`", $ml + 2, ' ', STR_PAD_RIGHT).' '.$field;
+            }
+            $fl = implode(",\r\n", $fr);
+            $pk = empty($pk) ? '' : ",\r\n  ".'primary key ('.implode(',', $pk).')';
+            $un = empty($un) ? '' : ",\r\n  ".'unique index `node`('.implode(',', $un).')';
             $ix = empty($ix) ? '' : implode('', $ix);
             $ll = empty($ll) ? '' : implode('', $ll);
             return <<<sql
 create table {$ne} `{$this->_table}` (
-  {$fl}{$pk}{$un}{$ix}{$ll}
+{$fl}{$pk}{$un}{$ix}{$ll}
 ) engine = InnoDB
 sql;
         }

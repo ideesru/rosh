@@ -2,6 +2,7 @@
     namespace xbweb\lib;
 
     use xbweb\ACL;
+    use xbweb\Language;
     use xbweb\Request;
 
     class Template {
@@ -59,8 +60,18 @@ HTML;
                 }
                 $item['key'] = $key;
                 $tpl = $tpls[$type];
-                if (empty($item['title']))  $item['title']  = ucfirst($key);
-                if (empty($item['action'])) $item['action'] = '';
+                if (empty($item['title'])) {
+                    $item['title'] = Language::translate($key);
+                }
+                if (empty($item['action'])) {
+                    $item['action'] = '';
+                } else {
+                    if ($item['action'] == '/') {
+                        $item['title'] = Language::translate('dashboard');
+                    } else {
+                        $item['title'] = Language::action($item['action']);
+                    }
+                }
                 $action = empty($item['id']) ? $item['action'] : $item['action'].'/'.$item['id'];
                 if (empty($item['url']))    $item['url']    = Request::URL($action);
                 if (empty($item['action'])) $item['action'] = $item['url'];

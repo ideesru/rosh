@@ -48,7 +48,7 @@
 }
 
 .xbweb-ui form ul.messages, form.xbweb-ui ul.messages {
-    list-style: none; margin: 1em 0; padding: 0 1em;
+    list-style: none; margin: 0; padding: .5em 1em;
 }
 
 .xbweb-ui form ul.messages > li, form.xbweb-ui ul.messages > li {
@@ -634,8 +634,14 @@ div.modal-wrapper .xbweb-cmf-message .code,
     content: '\f0eb';
 }
 
+.xbweb-ui form .single-tab, form.xbweb-ui .single-tab { padding-bottom: 1em; }
+.xbweb-ui form .single-tab + .buttons, form.xbweb-ui .single-tab + .buttons {
+    margin-top: 0;
+}
+
 /** FIXES **/
 .xbweb-ui-wysiwyg.code > div.tool-bar:after,
+.xbweb-ui form section:after, form.xbweb-ui section:after,
 .xbweb-ui fieldset:after, fieldset.xbweb-ui:after,
 .xbweb-ui div[class^='acl-']:after, div[class^='acl-'].xbweb-ui:after,
 .xbweb-ui div[class*=' acl-']:after, div[class*=' acl-'].xbweb-ui:after,
